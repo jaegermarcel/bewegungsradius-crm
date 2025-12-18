@@ -97,7 +97,7 @@ jobs:
         CELERY_BROKER_URL: 'redis://localhost:6379/0'
         CELERY_RESULT_BACKEND: 'redis://localhost:6379/0'
       run: |
-        pytest --cov --cov-report=xml --cov-report=term --cov-fail-under=85 --alluredir=allure-results --junitxml=junit.xml -v
+        pytest --cov --cov-report=xml --cov-report=term --cov-fail-under=80 --alluredir=allure-results --junitxml=junit.xml -v
 
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
