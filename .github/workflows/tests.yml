@@ -12,7 +12,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15
+        image: postgis/postgis:16-3.4
         env:
           POSTGRES_DB: test_db
           POSTGRES_USER: postgres
@@ -52,11 +52,11 @@ jobs:
     - name: Run tests with coverage
       env:
         DEBUG: 'False'
-        SECRET_KEY: 'test-secret-key-for-ci'
+        DJANGO_SECRET_KEY: 'test-secret-key-for-ci'
         DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/test_db'
         REDIS_URL: 'redis://localhost:6379/0'
       run: |
-        pytest --cov --cov-report=xml --cov-report=term
+        pytest --cov --cov-report=xml --cov-report=term --cov-fail-under=80
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
@@ -65,7 +65,3 @@ jobs:
         flags: unittests
         name: codecov-umbrella
         fail_ci_if_error: false
-
-    - name: Test coverage threshold
-      run: |
-        pytest --cov --cov-fail-under=50
