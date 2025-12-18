@@ -66,6 +66,18 @@ jobs:
       run: |
         python manage.py makemigrations --check --dry-run || python manage.py makemigrations
 
+    - name: Run migrations
+      env:
+        DEBUG: 'False'
+        DJANGO_SECRET_KEY: 'test-secret-key-for-ci'
+        DATABASE_NAME: 'test_db'
+        DATABASE_USER: 'postgres'
+        DATABASE_PASSWORD: 'postgres'
+        DATABASE_HOST: 'localhost'
+        DATABASE_PORT: '5432'
+      run: |
+        python manage.py migrate
+
     - name: Run tests with coverage
       env:
         DEBUG: 'False'
