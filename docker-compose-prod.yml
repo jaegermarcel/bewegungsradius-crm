@@ -1,0 +1,350 @@
+name: BewegungsRadius-prod-secure
+
+services:
+  # Haupt-PostgreSQL Datenbank mit PostGIS für die Anwendung
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # ✅ SICHER: expose statt ports
+    expose:
+      - "5432"
+    networks:
+      - backend
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+
+  # PostgreSQL Datenbank für Paperless
+  paperless_db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${PAPERLESS_DB_NAME}
+      POSTGRES_USER: ${PAPERLESS_DB_USER}
+      POSTGRES_PASSWORD: ${PAPERLESS_DB_PASSWORD}
+    volumes:
+      - paperless_postgres_data:/var/lib/postgresql/data
+    # ✅ SICHER: Nur expose
+    expose:
+      - "5432"
+    networks:
+      - backend
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${PAPERLESS_DB_USER} -d ${PAPERLESS_DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+
+  # Separate PostgreSQL Datenbank für Nginx Proxy Manager
+  npm_db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${NPM_USER}
+      POSTGRES_PASSWORD: ${NPM_PASSWORD}
+      POSTGRES_DB: ${NPM_NAME}
+    volumes:
+      - npm_postgres_data:/var/lib/postgresql/data
+    # ✅ SICHER: Nur expose
+    expose:
+      - "5432"
+    networks:
+      - backend
+    healthcheck:
+      test: [ "CMD-SHELL", "PGPASSWORD=${NPM_PASSWORD} psql -h localhost -U ${NPM_USER} -d ${NPM_NAME} -c 'SELECT 1'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+
+  web:
+    build: .
+    environment:
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DJANGO_SETTINGS_MODULE: bewegungsradius.settings
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_HOST: db
+      DATABASE_PORT: ${DATABASE_PORT:-5432}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DEBUG: ${DEBUG}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    command: >
+      bash -c "
+        echo 'Waiting for database...'
+        while ! nc -z db 5432; do
+          echo 'Database port not ready, waiting...'
+          sleep 2
+        done
+        echo 'Database port is open! Waiting a moment for full initialization...'
+        sleep 5
+        echo 'Starting Django application...'
+        python manage.py migrate &&
+        python manage.py collectstatic --noinput &&
+        gunicorn bewegungsradius.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120
+      "
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - ./media:/app/media
+    # ✅ SICHER: expose statt ports
+    expose:
+      - "8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+
+  # Nginx Proxy Manager
+  nginx-proxy-manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: always
+    ports:
+      - '80:80'           # ✅ OK - Public HTTP
+      - '443:443'         # ✅ OK - Public HTTPS
+      # ⚠️  NICHT: '81:81'  - Sollte nicht öffentlich sein!
+    expose:
+      - "81"              # ✅ Nur intern im Docker Network
+    environment:
+      DB_POSTGRES_USER: ${NPM_USER}
+      DB_POSTGRES_PASSWORD: ${NPM_PASSWORD}
+      DB_POSTGRES_NAME: ${NPM_NAME}
+      DB_POSTGRES_HOST: 'npm_db'
+      DB_POSTGRES_PORT: '5432'
+      DISABLE_IPV6: 'true'
+    volumes:
+      - ./npm_data:/data
+      - ./npm_letsencrypt:/etc/letsencrypt
+      - static_volume:/app/staticfiles:ro
+      - ./media:/app/media:ro
+    depends_on:
+      npm_db:
+        condition: service_healthy
+      web:
+        condition: service_started
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis für Cache und Celery
+  redis:
+    image: redis:8-alpine
+    container_name: redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis123}
+    volumes:
+      - redis_data:/data
+    # ✅ SICHER: expose statt ports
+    expose:
+      - "6379"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+
+  # Celery Worker
+  celery:
+    build: .
+    environment:
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DJANGO_SETTINGS_MODULE: bewegungsradius.settings
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_HOST: db
+      DATABASE_PORT: ${DATABASE_PORT:-5432}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DEBUG: ${DEBUG}
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    command: >
+      bash -c "
+        echo 'Waiting for Redis and Database...'
+        while ! nc -z redis 6379; do
+          sleep 0.1
+        done
+        while ! PGPASSWORD=${DATABASE_PASSWORD} psql -h db -U ${DATABASE_USER} -d ${DATABASE_NAME} -c 'SELECT 1' >/dev/null 2>&1; do
+          sleep 1
+        done
+        echo 'Starting Celery worker...'
+        celery -A bewegungsradius worker --loglevel=info -E --hostname=bewegungsradius-worker@%h --pool=solo --concurrency=1 -Q celery
+      "
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+      - web
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+
+  # Celery Beat Scheduler
+  celery-beat:
+    build: .
+    environment:
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DJANGO_SETTINGS_MODULE: bewegungsradius.settings
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_HOST: db
+      DATABASE_PORT: ${DATABASE_PORT:-5432}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DEBUG: ${DEBUG}
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    command: >
+      bash -c "
+        echo 'Waiting for Redis and Database...'
+        while ! nc -z redis 6379; do
+          sleep 0.1
+        done
+        while ! PGPASSWORD=${DATABASE_PASSWORD} psql -h db -U ${DATABASE_USER} -d ${DATABASE_NAME} -c 'SELECT 1' >/dev/null 2>&1; do
+          sleep 1
+        done
+        echo 'Starting Celery Beat scheduler...'
+        celery -A bewegungsradius beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+      "
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+      - web
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+
+  # Paperless-NGX - Dokumenten-Management System
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperless
+    restart: always
+    depends_on:
+      paperless_db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    # ✅ SICHER: expose statt ports
+    expose:
+      - "8000"
+    volumes:
+      - paperless_data:/usr/src/paperless/data
+      - paperless_media:/usr/src/paperless/media
+      - ./consume:/usr/src/paperless/consume
+    environment:
+      PAPERLESS_REDIS: redis://redis:6379/2
+      PAPERLESS_DBHOST: paperless_db
+      PAPERLESS_DBNAME: ${PAPERLESS_DB_NAME}
+      PAPERLESS_DBUSER: ${PAPERLESS_DB_USER}
+      PAPERLESS_DBPASS: ${PAPERLESS_DB_PASSWORD}
+      PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY}
+      PAPERLESS_URL: https://${PAPERLESS_DOMAIN}
+      PAPERLESS_OCR_LANGUAGE: deu
+      PAPERLESS_TIME_ZONE: Europe/Berlin
+      PAPERLESS_CONSUMER_POLLING: 60
+      PAPERLESS_ENABLE_COMPRESSION: 'true'
+      PAPERLESS_TASK_WORKERS: 2
+      PAPERLESS_THREADS_PER_WORKER: 1
+    networks:
+      - backend
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+  paperless_postgres_data:
+  npm_postgres_data:
+  static_volume:
+  redis_data:
+  paperless_data:
+  paperless_media:
+
+networks:
+  backend:
+    driver: bridge

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if discount_code.discount_type == 'percentage' %}{{ discount_code.discount_value|floatformat:0 }}%{% else %}{{ discount_code.discount_value|floatformat:2 }}€{% endif %} Rabatt - {{ company.name }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background-color: rgb(204, 190, 171) !important;
+            padding: 40px 30px;
+            text-align: center;
+            max-width:100%;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px 30px;
+        }
+
+        .greeting {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+        }
+
+        .description {
+            font-size: 1rem;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .course-info {
+            background-color: #f9f9f9;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .course-info h3 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .course-info .detail-row {
+            margin: 8px 0;
+        }
+
+        .course-info .detail-label {
+            font-weight: 600;
+        }
+
+        .discount-section {
+            background-color: #f9f9f9;
+            border: 2px solid rgb(204, 190, 171);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .discount-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .code-container {
+            background-color: white;
+            border: 1px dashed rgb(204, 190, 171);
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .discount-amount {
+            color: rgb(204, 190, 171);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .code {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: rgb(204, 190, 171);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .code-instruction {
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .validity {
+            background-color: #f8f9fa;
+            border-left: 4px solid rgb(204, 190, 171);
+            padding: 15px 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .services-list {
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .services-list h4 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .services-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .services-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .services-list li:before {
+            content: "•";
+            color: rgb(204, 190, 171);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .footer {
+            background-color: #333 !important;
+            color: white !important;
+            padding: 30px;
+            text-align: center;
+            max-width: 100%;
+        }
+
+        .footer h3 {
+            margin-bottom: 10px;
+            color: rgb(204, 190, 171);
+        }
+
+        .footer p {
+            margin-bottom: 8px;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            color: rgb(204, 190, 171);
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 0.9rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .social-links a:hover {
+            opacity: 0.7;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .main-content {
+                padding: 30px 20px;
+            }
+
+            .code {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+            <h1>Vielen Dank! 🙏</h1>
+            <p>{{ course.offer.get_title_display }}</p>
+        </div>
+    <div class="email-container">
+
+
+        <div class="main-content">
+            <div class="greeting">
+                Liebe {{ customer.first_name }},
+            </div>
+
+            <div class="description">
+                vielen Dank für deine Teilnahme am Kurs {{ course.offer.get_title_display }}!
+                Es hat mir viel Freude bereitet, mit dir zu trainieren. Ich hoffe, dich bald
+                in einem meiner Kurse wiederzusehen!
+            </div>
+
+            <div class="course-info">
+                <h3>📅 Dein Kurs im Überblick</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Kurs:</span> {{ course.offer.title }}
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Zeitraum:</span> {{ course.start_date|date:"d.m.Y" }} - {{ course.end_date|date:"d.m.Y" }}
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Einheiten:</span> {{ course.get_total_course_units }} x {{ course.offer.course_duration }} Minuten
+                </div>
+                {% if course.location %}
+                <div class="detail-row">
+                    <span class="detail-label">Ort:</span> {{ course.location.name }}, {{ course.location.get_full_address }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="description" style="margin-top: 30px; padding: 20px; background-color: #fef3c7; border-radius: 8px; color: #555;">
+                <strong style="display: block; margin-bottom: 10px;">🎁 Als Dankeschön für deine Treue:</strong>
+                Erhalte <strong style="font-size: 1.1em;">{{ discount_code.discount_value|floatformat:0 }}% Rabatt</strong>
+                auf deinen nächsten Kurs bei mir!
+            </div>
+
+            <div class="discount-section">
+                <div class="discount-text">
+                    Dein exklusiver Rabattcode:
+                </div>
+                <div class="code-container">
+                    <div class="code">{{ discount_code.code }}</div>
+                    <div class="code-instruction">Bei der Buchung angeben</div>
+                </div>
+            </div>
+
+            <div class="services-list">
+                <h4>Nutze den Rabatt für:</h4>
+                <ul>
+                    <li>Pilates-Kurse</li>
+                    <li>Beckenboden-Training</li>
+                    <li>Mama Fitness-Programme</li>
+                    <li>Praktische 10er-Karten</li>
+                </ul>
+            </div>
+
+            <div class="validity">
+                <strong>Gültigkeitsdauer:</strong> Dieser Code ist bis zum <strong>{{ discount_code.valid_until|date:"d.m.Y" }}</strong> gültig und kann einmal pro Person verwendet werden und ist nicht übertragbar.
+            </div>
+
+            <div class="description"><strong>Bitte beachte:</strong> Der Rabatt ist nicht auf Präventionskurse anwendbar und <strong>nur bei direkter Buchung über mich einlösbar</strong>.</div>
+
+            <div class="description">
+                Bei Fragen zu meinen Kursen oder zur Buchung stehe ich dir gerne zur Verfügung.
+            </div>
+
+            <div class="description">
+                Ich würde mich sehr freuen, dich bald wieder in einem meiner Kurse begrüßen zu dürfen!
+            </div>
+
+            <div class="description">
+                Herzliche und sportliche Grüße,<br>
+                Kathrin Jäger
+            </div>
+        </div>
+    </div>
+{% include "email/components/_email_footer.html" %}
+</body>
+</html>

@@ -1,0 +1,35 @@
+{% load i18n %}
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title mb-4">💰 Einnahmen & Ausgaben (Diesen Monat)</h5>
+
+        <div class="row mb-4">
+            <div class="col-6">
+                <div class="d-flex flex-column">
+                    <small class="text-muted">Einnahmen</small>
+                    <span class="text-success fw-bold h5">+{{ this_month_income }}€</span>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex flex-column">
+                    <small class="text-muted">Ausgaben</small>
+                    <span class="text-danger fw-bold h5">-{{ this_month_expense }}€</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress mb-3" style="height: 8px;">
+            {% widthratio this_month_income this_month_income|add:this_month_expense 100 as income_percent %}
+            <div class="progress-bar bg-success" style="width: {{ income_percent }}%"></div>
+            <div class="progress-bar bg-danger" style="width: {{ 100|add:income_percent|add:"-100" }}%"></div>
+        </div>
+
+        <div class="alert alert-info mb-0">
+            <strong>Gewinn/Verlust:</strong>
+            <span class="float-end fw-bold {% if this_month_profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                {% if this_month_profit >= 0 %}+{% endif %}{{ this_month_profit }}€
+            </span>
+        </div>
+    </div>
+</div>

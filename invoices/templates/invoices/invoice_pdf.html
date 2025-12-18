@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Rechnung {{ invoice.invoice_number }}</title>
+    <style>
+        @page { size: A4; margin: 1.8cm 2cm; }
+        body { font-family: Arial, sans-serif; font-size: 10.5pt; line-height: 1.25; }
+
+        /* Header Layout */
+        .header-container { display: table; width: 100%; margin-bottom: 0.5cm; }
+        .customer-address { display: table-cell; vertical-align: top; line-height: 1.2; }
+        .logo-container { display: table-cell; width: 40%; text-align: right; vertical-align: top; }
+        .logo { max-width: 110px; max-height: 110px; }
+
+        /* Stadt links, Datum rechts mit stabiler Tabellenstruktur */
+        .city-date-row {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+
+        .city-date-row td {
+            padding: 0;
+            vertical-align: top;
+        }
+
+        .city-date-row .city {
+            text-align: left;
+            width: 100%;
+        }
+
+        .city-date-row .date {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .invoice-number {
+            margin: 1cm 0;
+        }
+
+        .leistungszeitraum {
+            margin-top: 1cm;
+        }
+
+        .total {
+            font-weight: bold;
+            margin: 0.6cm 0 0.2cm 0;
+        }
+
+        .hinweis { margin-top: 0.5cm; }
+        .zahlungsinfo { margin-top: 0.8cm; }
+        .danke { margin-top: 0.8cm; }
+        .gruss { margin-top: 0.5cm; }
+
+        /* Allgemeines Layout */
+        .invoice-header { margin-bottom: 0.4cm; }
+        .section-title { font-weight: bold; margin-top: 0.4cm; margin-bottom: 0.2cm; }
+        p { margin: 0.3cm 0; }
+
+        /* Tabellenlayout */
+        table { width: 100%; border-collapse: collapse; margin: 0.5cm 0; }
+        thead th { text-align: left; padding: 0px 0; border-bottom: 1px solid #000; font-weight: normal; }
+        tbody td { padding: 0px 0; }
+        .text-right { text-align: right; }
+
+        /* Footer */
+        .footer-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: 0;
+            padding-top: 0.2cm;
+            border-top: 1px solid #000;
+            font-size: 7.5pt;
+            line-height: 1.2;
+            width: 100%;
+        }
+        .footer-row { display: table; width: 100%; }
+        .footer-col { display: table-cell; width: 33.33%; vertical-align: top; padding-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div class="logo-container">
+            {% if company and company.logo %}
+                <img src="file://{{ company.logo.path }}" class="logo">
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="invoice-header">
+        <div class="customer-address">
+            {{ invoice.customer.get_full_name }}<br>
+            {{ invoice.customer.street }} {{ invoice.customer.house_number }}<br>
+            <table class="city-date-row">
+                <tr>
+                    <td class="city">{{ invoice.customer.postal_code }} {{ invoice.customer.city }}</td>
+                    <td class="date">{{ invoice.issue_date|date:"j. F Y" }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <p class="invoice-number"><strong>Rechnung Nr.: {{ invoice.invoice_number }}</strong><br>
+    Rechnungsdatum: {{ invoice.issue_date|date:"d.m.Y" }}</p>
+
+    <!-- ✅ KURS oder OFFER -->
+    {% if invoice.course %}
+        <!-- ========== KURS ========== -->
+        <p class="section-title">Leistungsbeschreibung:</p>
+        <p>
+            {{ invoice.course.title }}
+            {% if invoice.is_prevention_certified %}
+                (Diese Präventionsmaßnahme ist zertifiziert nach § 20 SGB V und kann ggf. anteilig von Ihrer Krankenkasse erstattet werden)
+            {% endif %}
+        </p>
+
+        <p>
+            {{ invoice.course_units }} Kurseinheiten à {{ invoice.course_duration }} Minuten<br>
+            {% if invoice.course.location %}
+                Ort: {{ invoice.course.location.name }}, {{ invoice.course.location.get_full_address }}<br>
+            {% endif %}
+            {% if invoice.zpp_prevention_id %}
+                Kurs-ID: {{ invoice.zpp_prevention_id }}
+            {% endif %}
+        </p>
+
+        <p class="leistungszeitraum"><strong>Leistungszeitraum:</strong> {{ invoice.course.start_date|date:"d.m.Y" }} – {{ invoice.course.end_date|date:"d.m.Y" }}</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:15%;">Menge</th>
+                    <th style="width:60%;">Artikel</th>
+                    <th style="width:25%;" class="text-right">Einzelpreis</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>{{ invoice.course.title }}</td>
+                    <td class="text-right">{{ invoice.original_amount|default:invoice.amount|floatformat:2 }} €</td>
+                </tr>
+                {% if invoice.discount_code %}
+                <tr>
+                    <td>1</td>
+                    <td>Rabatt (Code: {{ invoice.discount_code.code }})</td>
+                    <td class="text-right">-{{ invoice.discount_amount|floatformat:2 }} €</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+    {% elif invoice.offer %}
+        <!-- ========== OFFER (10ER-KARTE, WORKSHOP, SEMINAR) ========== -->
+        <p class="section-title">Leistungsbeschreibung:</p>
+
+        {% if invoice.offer.is_ticket_10 %}
+            <!-- ✅ 10ER-KARTE -->
+            <p>
+                <strong>{{ invoice.offer.title }}</strong><br>
+                {{ invoice.offer.get_description }}
+            </p>
+
+            <p class="leistungszeitraum">
+                <strong>Gültigkeit:</strong> Diese {{ invoice.offer.ticket_sessions }}er-Karte ist ab dem ersten Kurstag
+                <strong>{{ invoice.offer.ticket_validity_months }} Monate</strong> gültig. Nicht genutzte Einheiten verfallen nach Ablauf der Gültigkeit.
+                Eine Rückerstattung oder Verlängerung ist ausgeschlossen.
+            </p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:15%;">Menge</th>
+                        <th style="width:60%;">Artikel</th>
+                        <th style="width:25%;" class="text-right">Einzelpreis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>{{ invoice.offer.title }} ({{ invoice.offer.ticket_sessions }}er-Karte)</td>
+                        <td class="text-right">{{ invoice.original_amount|default:invoice.amount|floatformat:2 }} €</td>
+                    </tr>
+                    {% if invoice.discount_code %}
+                    <tr>
+                        <td>1</td>
+                        <td>Rabatt (Code: {{ invoice.discount_code.code }})</td>
+                        <td class="text-right">-{{ invoice.discount_amount|floatformat:2 }} €</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+        {% else %}
+            <!-- ✅ WORKSHOP / SEMINAR -->
+            <p>
+                <strong>{{ invoice.offer.title }}</strong><br>
+                {{ invoice.offer.get_description }}
+            </p>
+
+            {% if invoice.course_units %}
+                <p>
+                    {{ invoice.course_units }} Einheit(en)
+                    {% if invoice.course_duration %}à {{ invoice.course_duration }} Minuten{% endif %}
+                </p>
+            {% endif %}
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:15%;">Menge</th>
+                        <th style="width:60%;">Artikel</th>
+                        <th style="width:25%;" class="text-right">Einzelpreis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>{{ invoice.offer.title }}</td>
+                        <td class="text-right">{{ invoice.original_amount|default:invoice.amount|floatformat:2 }} €</td>
+                    </tr>
+                    {% if invoice.discount_code %}
+                    <tr>
+                        <td>1</td>
+                        <td>Rabatt (Code: {{ invoice.discount_code.code }})</td>
+                        <td class="text-right">-{{ invoice.discount_amount|floatformat:2 }} €</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endif %}
+
+    <p class="total">Gesamtbetrag: {{ invoice.total_amount|floatformat:2 }} €</p>
+    {% if invoice.is_tax_exempt %}
+        <p class="hinweis"><strong>Hinweis:</strong> Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.</p>
+    {% endif %}
+    <p class="zahlungsinfo">Bitte überweise den Gesamtbetrag innerhalb von 14 Tagen auf das unten angegebene Konto.</p>
+    <p class="danke">Vielen Dank!</p>
+    <p class="gruss">Mit sportlichen Grüßen<br>Kathrin Jäger</p>
+
+    <div class="footer-section">
+        <div class="footer-row">
+            <div class="footer-col">
+                {% if company %}
+                    Kathrin Jäger<br>
+                    {{ company.street }} {{ company.house_number }}<br>
+                    {{ company.postal_code }} {{ company.city }}
+                {% endif %}
+            </div>
+
+            <div class="footer-col">
+                {% if company %}
+                    {{ company.phone }}<br>
+                    {{ company.email }}<br>
+                    Steuernummer: {{ company.tax_number }}
+                {% endif %}
+            </div>
+
+            <div class="footer-col">
+                {% if company %}
+                    {{ company.bank_name }}<br>
+                    IBAN: {{ company.iban }}<br>
+                    BIC: {{ company.bic }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

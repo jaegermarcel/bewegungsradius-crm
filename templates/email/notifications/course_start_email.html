@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course_title }} startet bald!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background-color: rgb(204, 190, 171) !important;
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 100%;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .main-content {
+            padding: 40px 30px;
+        }
+
+        .greeting {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .intro-text {
+            font-size: 1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .course-info {
+            background-color: #f9f9f9;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .course-info h3 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .course-info .detail-row {
+            margin: 8px 0;
+            display: flex;      /* ← HINZUFÜGEN */
+            gap: 10px;          /* ← Abstand zwischen Label und Value */
+        }
+
+        .course-info .detail-label {
+            font-weight: 600;
+            min-width: 100px;   /* ← Feste Breite für Alignment */
+        }
+
+        .course-info .detail-value {
+            flex: 1;            /* ← Nimmt restlichen Platz */
+        }
+
+        /* Course Details Box */
+        .course-box {
+            background-color: #fafafa;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 20px 20px 20px 20px;
+        }
+
+        .course-box h3 {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .detail-row {
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            margin-left: 8px;
+        }
+
+        .checklist {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .checklist h3 {
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .checklist-item {
+            margin-bottom: 10px;
+            padding-left: 20px;
+        }
+
+        .checklist-item:before {
+            content: "✓ ";
+            color: rgb(204, 190, 171);
+            font-weight: bold;
+            margin-left: -20px;
+            margin-right: 10px;
+        }
+
+        .info-box {
+            padding: 0 20px;
+        }
+        .info-box h4 {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .info-box p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .zpp-box {
+            padding: 20px 0;
+        }
+
+        .zpp-box h4 {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .zpp-box p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .closing {
+            margin-top: 30px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .signature {
+            margin-top: 20px;
+        }
+
+        .footer {
+            background-color: #333 !important;
+            color: white !important;
+            padding: 30px;
+            text-align: center;
+            max-width: 100%;
+        }
+
+        .footer h3 {
+            margin-bottom: 10px;
+            color: rgb(204, 190, 171);
+        }
+
+        .footer p {
+            margin-bottom: 8px;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: rgb(204, 190, 171);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .main-content {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<!-- Header -->
+        <div class="header">
+            <h1>{{ course.title }}</h1>
+        </div>
+    <div class="email-container">
+
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="greeting">
+                Liebe {{ customer.first_name }},
+            </div>
+
+            <div class="intro-text">
+                ich freue mich sehr, dass du dich für meinen <strong>{{ course.title }}</strong> angemeldet hast! Der Kurs startet am <strong>{{ course.start_date|date:"l" }}</strong>. Hier findest du alle wichtigen Informationen.
+            </div>
+
+            <!-- Course Details -->
+            <div class="course-info">
+                <h3>📅 Dein Kurs im Überblick</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Kurs:</span>
+                    <span class="detail-value">{{ course.offer.title }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Zeitraum:</span>
+                    <span class="detail-value">{{ course.start_date|date:"d.m.Y" }} - {{ course.end_date|date:"d.m.Y" }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Uhrzeit:</span>
+                    <span class="detail-value">{{ course.start_time|time:"H:i" }} - {{ course.end_time|time:"H:i" }}</span>
+                </div>
+                {% if course.location %}
+                <div class="detail-row">
+                    <span class="detail-label">Ort:</span>
+                    <span class="detail-value">{{ course.location.name }}, {{ course.location.get_full_address }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- What to Bring -->
+            <div class="checklist">
+                <h3>📋 Das brauchst du:</h3>
+                <div class="checklist-item">Gymnastikmatte</div>
+                <div class="checklist-item">Bequeme Kleidung</div>
+                <div class="checklist-item">Etwas zu trinken</div>
+            </div>
+
+            <!-- Parking Info -->
+            {% if is_inperson %}
+            <div class="info-box">
+                    <h4>🅿️ Parken:</h4>
+                <p>
+                Es gibt vor dem Haus keine Parkmöglichkeiten. Plane bitte ein paar Minuten extra ein.
+
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- ZPP Certification Info -->
+            {% if course.offer.zpp_certification %}
+            <div class="zpp-box">
+                <h4>✅ Zertifizierter Präventionskurs</h4>
+                <p>
+                    Gute Nachricht: Viele Krankenkassen übernehmen bis zu <strong>100%</strong> der Kursgebühren!
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>Wichtig:</strong> Du benötigst mindestens <strong>80% Anwesenheit</strong> für die Kostenerstattung.
+                </p>
+                {% if courses.offer.zpp_certification.is_zpp_id %}
+                <p style="margin-top: 10px;">
+                    <strong>ZPP-ID:</strong> {{ course.offer.zpp_certification.zpp_id }}
+                </p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="closing">
+                Falls du vorab noch Fragen hast, schreib mir gerne. Ich freue mich auf dich!
+            </div>
+
+            <div class="signature">
+                Herzliche und sportliche Grüße,<br>
+                Kathrin Jäger
+            </div>
+        </div>
+
+    </div>
+<!-- Footer -->
+        {% if company %}
+            {% include "email/components/_email_footer.html" %}
+        {% endif %}
+</body>
+
+</html>

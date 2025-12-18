@@ -1,0 +1,58 @@
+{% extends "admin/change_list.html" %}
+{% load i18n unfold %}
+{% load accounting_filters %}
+
+{% block content_title %}
+    <h1>Ein-/Ausgaben Management</h1>
+{% endblock %}
+
+{% block content %}
+    {# Accounting Summary Cards - Full Width Above Everything #}
+    <div style="margin-bottom: 2rem; width: 100%; order: -1;">
+        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; width: 100%;">
+
+            {# Card 1: Einnahmen #}
+            <div style="flex: 1; min-width: 250px; border: 1px solid #374151; border-radius: 0.5rem; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3);">
+                <h3 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">
+                    💰 Gesamt Einnahmen
+                </h3>
+                <p style="font-size: 1.875rem; font-weight: bold; color: #10b981; margin-bottom: 0.5rem;">
+                    {{ total_income|format_thousands }}€
+                </p>
+                <p style="font-size: 0.75rem;">
+                    Alle bezahlten Rechnungen
+                </p>
+            </div>
+
+            {# Card 2: Ausgaben #}
+            <div style="flex: 1; min-width: 250px; border: 1px solid #374151; border-radius: 0.5rem; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3);">
+                <h3 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">
+                    💸 Gesamt Ausgaben
+                </h3>
+                <p style="font-size: 1.875rem; font-weight: bold; color: #ef4444; margin-bottom: 0.5rem;">
+                    {{ total_expense|format_thousands }}€
+                </p>
+                <p style="font-size: 0.75rem;">
+                    Stornierungen & Gegenbuchungen
+                </p>
+            </div>
+
+            {# Card 3: Gewinn #}
+            <div style="flex: 1; min-width: 250px; border: 1px solid #374151; border-radius: 0.5rem; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3);">
+                <h3 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">
+                    📊 Netto Gewinn
+                </h3>
+                <p style="font-size: 1.875rem; font-weight: bold; color: {% if net_profit >= 0 %}#3b82f6{% else %}#ef4444{% endif %}; margin-bottom: 0.5rem;">
+                    {{ net_profit|format_thousands }}€
+                </p>
+                <p style="font-size: 0.75rem;">
+                    Einnahmen minus Ausgaben
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    {# Original content (search, filter, tabelle) #}
+    {{ block.super }}
+{% endblock %}

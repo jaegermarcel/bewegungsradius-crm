@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rechnung {{ invoice.invoice_number }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+        }
+
+        .email-container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            padding: 40px 30px;
+            text-align: left;
+        }
+
+        .greeting {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .intro-text {
+            font-size: 1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        /* Invoice Details Box */
+        .invoice-box {
+            padding: 0px;
+            margin-bottom: 30px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .invoice-box h3 {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .detail-row {
+            margin-bottom: 12px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .detail-label {
+            min-width: 100px;
+        }
+
+        .detail-value {
+            flex: 1;
+        }
+
+
+        .closing {
+            margin-top: 30px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .signature {
+            margin-top: 20px;
+        }
+
+        .footer {
+            background-color: #333 !important;
+            color: white !important;
+            padding: 30px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .footer h3 {
+            margin-bottom: 10px;
+            color: rgb(204, 190, 171);
+        }
+
+        .footer p {
+            margin-bottom: 8px;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: rgb(204, 190, 171);
+            text-decoration: none;
+        }
+
+        .social-links {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .main-content {
+                padding: 30px 20px;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .detail-label {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="greeting">
+                Liebe {{ customer.first_name }},
+            </div>
+
+            <div class="intro-text">
+                anbei erhältst du deine Rechnung für
+                {% if invoice.course %}
+                    den Kurs <strong>{{ invoice.course.offer.title }}</strong>.
+                {% else %}
+                    die <strong>{{ invoice.offer.title }}</strong>.
+                {% endif %}
+                Die Rechnung ist als PDF-Datei dieser Email beigefügt.
+            </div>
+
+            <!-- Invoice Details -->
+            <div class="invoice-box">
+                <h3>Rechnungsdetails:</h3>
+
+                <div class="detail-row">
+                    <span class="detail-label">Verwendungszweck:</span>
+                    <span class="detail-value">{{ invoice.invoice_number }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Empfänger:</span>
+                    <span class="detail-value">Kathrin Jäger</span>
+                </div>
+
+            </div>
+
+            <div class="closing">
+                    <span class="detail-value">Mit deiner Anmeldung hast du meine Allgemeinen Geschäftsbedingungen akzeptiert
+                    (siehe Footer auf www.bewegungsradius.com)</span>
+                </div>
+
+            <div class="closing">
+                Bei Fragen zu deiner Rechnung stehe ich dir gerne zur Verfügung.
+            </div>
+
+            <div class="signature">
+                Herzliche Grüße,<br>
+                Kathrin Jäger
+            </div>
+        </div>
+
+
+    </div>
+<!-- Footer -->
+        {% if company %}
+            {% include "email/components/_email_footer.html" %}
+        {% endif %}
+</body>
+
+</html>
