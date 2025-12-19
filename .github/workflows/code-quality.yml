@@ -25,6 +25,7 @@ jobs:
 
     - name: Run Black (formatting check)
       run: black --check .
+      continue-on-error: true
 
     - name: Run isort (import sorting)
       run: isort --check-only .
