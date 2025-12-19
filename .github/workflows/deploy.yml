@@ -2,7 +2,7 @@ name: Deploy to Server
 
 on:
   workflow_run:
-    workflows: ["Tests & Coverage"]
+    workflows: ["Allure Report"]
     branches: [main]
     types:
       - completed
@@ -15,9 +15,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Deploy to Production
+    - name: Deploy to Server
       run: |
-        echo "🚀 Deploying to production..."
+        echo "🚀 Deploying to Server..."
         echo "Branch: ${{ github.event.workflow_run.head_branch }}"
         echo "Commit: ${{ github.event.workflow_run.head_sha }}"
         
