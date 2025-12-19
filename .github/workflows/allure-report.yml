@@ -2,7 +2,7 @@ name: Allure Report
 
 on:
   workflow_run:
-    workflows: ["Tests & Coverage"]
+    workflows: ["Code Quality"]
     types:
       - completed
 
