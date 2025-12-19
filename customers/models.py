@@ -1,13 +1,12 @@
-from django.db import models
-from django.contrib.gis.db import models as gis_models
-from django.utils import timezone
 from datetime import date
 
-from .services import (
-    AddressGeocoder,
-    DiscountCodeGenerator,
-    DiscountCodeValidator,
-)
+from django.contrib.gis.db import models as gis_models
+from django.db import models
+from django.utils import timezone
+
+from .services import (AddressGeocoder, DiscountCodeGenerator,
+                       DiscountCodeValidator)
+
 
 class ContactChannel(models.Model):
     name = models.CharField(max_length=100, verbose_name="Name")
@@ -19,12 +18,13 @@ class ContactChannel(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Aktualisiert am")
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
         verbose_name = "Kontaktkanal"
         verbose_name_plural = "Kontaktkanäle"
 
     def __str__(self):
         return self.name
+
 
 class Customer(models.Model):
 
@@ -40,17 +40,21 @@ class Customer(models.Model):
     house_number = models.CharField(max_length=10, verbose_name="Hausnummer")
     postal_code = models.CharField(max_length=10, verbose_name="PLZ")
     city = models.CharField(max_length=100, verbose_name="Stadt")
-    country = models.CharField(max_length=100, default="Deutschland", verbose_name="Land")
+    country = models.CharField(
+        max_length=100, default="Deutschland", verbose_name="Land"
+    )
 
     # Geografische Koordinaten
-    coordinates = gis_models.PointField(null=True, blank=True, verbose_name="Koordinaten", srid=4326)
+    coordinates = gis_models.PointField(
+        null=True, blank=True, verbose_name="Koordinaten", srid=4326
+    )
     contact_channel = models.ForeignKey(
         ContactChannel,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='customers',
-        verbose_name="Kontaktkanal"
+        related_name="customers",
+        verbose_name="Kontaktkanal",
     )
 
     # Zusätzliche Informationen
@@ -58,14 +62,16 @@ class Customer(models.Model):
 
     # Status
     is_active = models.BooleanField(default=True, verbose_name="Aktiv")
-    archived_at = models.DateTimeField(blank=True, null=True, verbose_name="Archiviert am")
+    archived_at = models.DateTimeField(
+        blank=True, null=True, verbose_name="Archiviert am"
+    )
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Erstellt am")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Aktualisiert am")
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
         verbose_name = "Kunde"
         verbose_name_plural = "Kunden"
 
@@ -77,7 +83,7 @@ class Customer(models.Model):
         parts = [
             f"{self.street} {self.house_number}".strip(),
             f"{self.postal_code} {self.city}".strip(),
-            self.country
+            self.country,
         ]
         return ", ".join([p for p in parts if p])
 
@@ -126,6 +132,7 @@ class Customer(models.Model):
 
             if changed:
                 import logging
+
                 logger = logging.getLogger(__name__)
                 logger.info(f"[GEOCODING] Address changed for {self.get_full_name()}")
                 logger.info(f"   Old: {old_address}")
@@ -135,141 +142,108 @@ class Customer(models.Model):
         except Customer.DoesNotExist:
             return True
 
+
 class CustomerDiscountCode(models.Model):
     """Kundenspezifischer Rabattcode"""
 
     DISCOUNT_TYPE_CHOICES = [
-        ('percentage', 'Prozent'),
-        ('fixed', 'Fester Betrag'),
+        ("percentage", "Prozent"),
+        ("fixed", "Fester Betrag"),
     ]
 
     REASON_CHOICES = [
-        ('birthday', 'Geburtstag'),
-        ('course_completed', 'Kurs abgeschlossen'),
-        ('referral', 'Empfehlung'),
-        ('loyalty', 'Treueprämie'),
-        ('other', 'Sonstiges'),
+        ("birthday", "Geburtstag"),
+        ("course_completed", "Kurs abgeschlossen"),
+        ("referral", "Empfehlung"),
+        ("loyalty", "Treueprämie"),
+        ("other", "Sonstiges"),
     ]
 
     STATUS_CHOICES = [
-        ('planned', 'Geplant'),
-        ('sent', 'Versendet'),
-        ('used', 'Eingelöst'),
-        ('expired', 'Abgelaufen'),
-        ('cancelled', 'Storniert'),
+        ("planned", "Geplant"),
+        ("sent", "Versendet"),
+        ("used", "Eingelöst"),
+        ("expired", "Abgelaufen"),
+        ("cancelled", "Storniert"),
     ]
 
     # Verknüpfung zum Kunden
     customer = models.ForeignKey(
         Customer,
         on_delete=models.CASCADE,
-        related_name='discount_codes',
-        verbose_name="Kunde"
+        related_name="discount_codes",
+        verbose_name="Kunde",
     )
 
     course = models.ForeignKey(
-        'courses.Course',
+        "courses.Course",
         on_delete=models.CASCADE,
-        related_name='discount_codes',
+        related_name="discount_codes",
         verbose_name="Kurs",
         null=True,
-        blank=True
+        blank=True,
     )
 
     # Rabattcode
-    code = models.CharField(
-        max_length=50,
-        unique=True,
-        verbose_name="Code"
-    )
+    code = models.CharField(max_length=50, unique=True, verbose_name="Code")
 
     # Rabatt-Details
     discount_type = models.CharField(
         max_length=20,
         choices=DISCOUNT_TYPE_CHOICES,
-        default='percentage',
-        verbose_name="Rabatt-Typ"
+        default="percentage",
+        verbose_name="Rabatt-Typ",
     )
 
     discount_value = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        verbose_name="Rabattwert"
+        max_digits=10, decimal_places=2, verbose_name="Rabattwert"
     )
 
     # Grund für den Rabatt
     reason = models.CharField(
-        max_length=50,
-        choices=REASON_CHOICES,
-        default='other',
-        verbose_name="Grund"
+        max_length=50, choices=REASON_CHOICES, default="other", verbose_name="Grund"
     )
 
-    description = models.TextField(
-        blank=True,
-        verbose_name="Beschreibung"
-    )
+    description = models.TextField(blank=True, verbose_name="Beschreibung")
 
     # Gültigkeit (nur Datum, keine Uhrzeit)
-    valid_from = models.DateField(
-        default=date.today,
-        verbose_name="Gültig von"
-    )
+    valid_from = models.DateField(default=date.today, verbose_name="Gültig von")
 
-    valid_until = models.DateField(
-        verbose_name="Gültig bis"
-    )
+    valid_until = models.DateField(verbose_name="Gültig bis")
 
     # Status
     status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default='planned',
-        verbose_name="Status"
+        max_length=20, choices=STATUS_CHOICES, default="planned", verbose_name="Status"
     )
 
     # Verwendung (Timestamps für Historie)
-    used_at = models.DateTimeField(
-        null=True,
-        blank=True,
-        verbose_name="Verwendet am"
-    )
+    used_at = models.DateTimeField(null=True, blank=True, verbose_name="Verwendet am")
 
     # E-Mail-Versand (Timestamps für Historie)
     email_sent_at = models.DateTimeField(
-        null=True,
-        blank=True,
-        verbose_name="E-Mail versendet am"
+        null=True, blank=True, verbose_name="E-Mail versendet am"
     )
 
     # Stornierung (Timestamps für Historie)
     cancelled_at = models.DateTimeField(
-        null=True,
-        blank=True,
-        verbose_name="Storniert am"
+        null=True, blank=True, verbose_name="Storniert am"
     )
 
-    cancelled_reason = models.TextField(
-        blank=True,
-        verbose_name="Stornierungsgrund"
-    )
+    cancelled_reason = models.TextField(blank=True, verbose_name="Stornierungsgrund")
 
     # Timestamps
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name="Erstellt am"
-    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Erstellt am")
 
     created_by = models.ForeignKey(
-        'auth.User',
+        "auth.User",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        verbose_name="Erstellt von"
+        verbose_name="Erstellt von",
     )
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
         verbose_name = "Rabattcode"
         verbose_name_plural = "Rabattcodes"
 
@@ -283,19 +257,19 @@ class CustomerDiscountCode(models.Model):
 
     def calculate_discount(self, amount):
         """Berechnet den Rabattbetrag"""
-        if self.discount_type == 'percentage':
+        if self.discount_type == "percentage":
             return amount * (self.discount_value / 100)
         return min(self.discount_value, amount)
 
     def use_code(self):
         """Markiert den Code als verwendet"""
-        self.status = 'used'
+        self.status = "used"
         self.used_at = timezone.now()
         self.save()
 
     def get_discount_display(self):
         """Formatierte Rabattanzeige"""
-        if self.discount_type == 'percentage':
+        if self.discount_type == "percentage":
             return f"{self.discount_value}%"
         return f"{self.discount_value}€"
 
@@ -308,5 +282,3 @@ class CustomerDiscountCode(models.Model):
         """Generiert einen kursspezifischen Code"""
         generator = DiscountCodeGenerator()
         return generator.generate(course, customer)
-
-

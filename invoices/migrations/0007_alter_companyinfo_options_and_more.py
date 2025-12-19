@@ -6,16 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('invoices', '0006_alter_invoice_is_prevention_certified'),
+        ("invoices", "0006_alter_invoice_is_prevention_certified"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='companyinfo',
-            options={'verbose_name': 'Unternehmenseinstellungen'},
+            name="companyinfo",
+            options={"verbose_name": "Unternehmenseinstellungen"},
         ),
         migrations.RemoveField(
-            model_name='companyinfo',
-            name='is_active',
+            model_name="companyinfo",
+            name="is_active",
         ),
     ]

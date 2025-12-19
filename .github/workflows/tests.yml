@@ -8,8 +8,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
   checks: write
   pull-requests: write
 
@@ -85,7 +83,7 @@ jobs:
       run: |
         python manage.py migrate
 
-    - name: Run tests with Allure and Coverage
+    - name: Run tests with Coverage
       env:
         DEBUG: 'False'
         DJANGO_SECRET_KEY: 'test-secret-key-for-ci'
@@ -97,37 +95,14 @@ jobs:
         CELERY_BROKER_URL: 'redis://localhost:6379/0'
         CELERY_RESULT_BACKEND: 'redis://localhost:6379/0'
       run: |
-        pytest --cov --cov-report=xml --cov-report=term --cov-fail-under=80 --alluredir=allure-results --junitxml=junit.xml -v
+        pytest --cov --cov-report=xml --cov-report=term --cov-fail-under=85 --junitxml=junit.xml -v
 
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
-        files: |
-          junit.xml
+        files: junit.xml
         check_name: Test Results
-        comment_title: Test Results
-
-    - name: Install Allure CLI
-      if: always()
-      run: |
-        sudo wget https://github.com/allure-framework/allure2/releases/download/2.24.1/allure-2.24.1.tgz
-        sudo tar -zxvf allure-2.24.1.tgz -C /opt/
-        sudo ln -s /opt/allure-2.24.1/bin/allure /usr/bin/allure
-
-    - name: Generate Allure Report
-      if: always()
-      run: |
-        allure generate allure-results --clean -o allure-report
-
-    - name: Deploy Allure report to GitHub Pages
-      if: always()
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_branch: gh-pages
-        publish_dir: allure-report
-        force_orphan: true
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3

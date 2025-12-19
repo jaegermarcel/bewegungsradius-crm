@@ -1,13 +1,12 @@
 import logging
-from bewegungsradius.core.pdf.pdf_service import (
-    PdfService,
-    PdfServiceFactory,
-)
+
+from bewegungsradius.core.pdf.pdf_service import PdfService, PdfServiceFactory
 
 logger = logging.getLogger(__name__)
 
 
 # ==================== Invoice-spezifischer Filename Generator ====================
+
 
 class InvoiceFilenameGenerator:
     """Generiert Invoice-spezifische Dateinamen
@@ -42,6 +41,7 @@ class InvoiceFilenameGenerator:
 
 # ==================== Invoice PDF Service ====================
 
+
 class InvoicePdfService:
     """High-Level Invoice PDF Service
 
@@ -71,8 +71,7 @@ class InvoicePdfService:
 
         context = self._build_invoice_context(invoice)
         pdf_bytes = self.pdf_service.generate(
-            template_name='invoices/invoice_pdf.html',
-            context=context
+            template_name="invoices/invoice_pdf.html", context=context
         )
 
         logger.info(f"Invoice PDF generated: {len(pdf_bytes)} bytes")
@@ -91,8 +90,7 @@ class InvoicePdfService:
 
         context = self._build_invoice_context(invoice)
         pdf_bytes = self.pdf_service.generate(
-            template_name='invoices/cancellation_pdf.html',
-            context=context
+            template_name="invoices/cancellation_pdf.html", context=context
         )
 
         logger.info(f"Cancellation PDF generated: {len(pdf_bytes)} bytes")
@@ -113,9 +111,9 @@ class InvoicePdfService:
         context = self._build_invoice_context(invoice)
 
         pdf_bytes = self.pdf_service.generate_and_save(
-            template_name='invoices/invoice_pdf.html',
+            template_name="invoices/invoice_pdf.html",
             context=context,
-            filename=filename
+            filename=filename,
         )
 
         return pdf_bytes
@@ -135,9 +133,9 @@ class InvoicePdfService:
         context = self._build_invoice_context(invoice)
 
         pdf_bytes = self.pdf_service.generate_and_save(
-            template_name='invoices/cancellation_pdf.html',
+            template_name="invoices/cancellation_pdf.html",
             context=context,
-            filename=filename
+            filename=filename,
         )
 
         return pdf_bytes
@@ -156,12 +154,13 @@ class InvoicePdfService:
         company = CompanyInfo.objects.filter().first()
 
         return {
-            'invoice': invoice,
-            'company': company,
+            "invoice": invoice,
+            "company": company,
         }
 
 
 # ==================== Factory ====================
+
 
 class InvoicePdfServiceFactory:
     """Factory für InvoicePdfService"""
@@ -178,6 +177,7 @@ class InvoicePdfServiceFactory:
 
 
 # ==================== Legacy Compatibility ====================
+
 
 def generate_invoice_pdf(invoice) -> bytes:
     """Legacy-Funktion für Rückwärtskompatibilität

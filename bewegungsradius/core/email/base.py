@@ -6,16 +6,18 @@ core/email/base.py - Abstrakte E-Mail Basis-Klasse
 ✅ Single Responsibility: Nur Email-Versand-Logik
 """
 
-from abc import ABC, abstractmethod
-from django.core.mail import EmailMultiAlternatives
-from django.conf import settings
-from django.template.loader import render_to_string
 import logging
+from abc import ABC, abstractmethod
+
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 logger = logging.getLogger(__name__)
 
 
 # ==================== VALUE OBJECTS ====================
+
 
 class EmailTemplateConfig:
     """Template-Konfiguration - Value Object"""
@@ -31,19 +33,23 @@ class EmailTemplateConfig:
         try:
             return render_to_string(self.template_path, self.context)
         except Exception as e:
-            logger.error(f"Template Rendering fehlgeschlagen ({self.template_path}): {e}")
-            raise EmailTemplateRenderError(f"Template konnte nicht gerendert werden: {e}")
+            logger.error(
+                f"Template Rendering fehlgeschlagen ({self.template_path}): {e}"
+            )
+            raise EmailTemplateRenderError(
+                f"Template konnte nicht gerendert werden: {e}"
+            )
 
 
 class EmailPayload:
     """E-Mail Payload - Value Object"""
 
     def __init__(
-            self,
-            subject: str,
-            html_content: str,
-            recipient_email: str,
-            from_email: str = None
+        self,
+        subject: str,
+        html_content: str,
+        recipient_email: str,
+        from_email: str = None,
     ):
         self.subject = subject
         self.html_content = html_content
@@ -63,6 +69,7 @@ class EmailPayload:
 
 
 # ==================== BASE SERVICE ====================
+
 
 class BaseEmailService(ABC):
     """Abstrakte Basis-Klasse für alle E-Mail Services
@@ -101,7 +108,9 @@ class BaseEmailService(ABC):
         try:
             template_config = self.get_template_config(*args, **kwargs)
             html_content = template_config.render()
-            payload = self.build_email_payload(*args, html_content=html_content, **kwargs)
+            payload = self.build_email_payload(
+                *args, html_content=html_content, **kwargs
+            )
             payload.validate()
             self._send_email(payload)
 
@@ -114,22 +123,17 @@ class BaseEmailService(ABC):
 
     def send_bulk_emails(self, recipient_list: list) -> dict:
         """Versendet Emails an mehrere Empfänger"""
-        result = {
-            'sent': 0,
-            'errors': 0,
-            'failed': []
-        }
+        result = {"sent": 0, "errors": 0, "failed": []}
 
         for recipient_data in recipient_list:
             try:
                 self.send_single_email(**recipient_data)
-                result['sent'] += 1
+                result["sent"] += 1
             except Exception as e:
-                result['errors'] += 1
-                result['failed'].append({
-                    'recipient': str(recipient_data),
-                    'error': str(e)
-                })
+                result["errors"] += 1
+                result["failed"].append(
+                    {"recipient": str(recipient_data), "error": str(e)}
+                )
                 logger.error(f"❌ Fehler bei {recipient_data}: {e}")
 
         return result
@@ -140,7 +144,7 @@ class BaseEmailService(ABC):
             subject=payload.subject,
             body="Bitte verwende den HTML-Content",
             from_email=payload.from_email,
-            to=[payload.recipient_email]
+            to=[payload.recipient_email],
         )
         email.attach_alternative(payload.html_content, "text/html")
         email.send()

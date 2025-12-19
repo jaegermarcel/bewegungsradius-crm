@@ -6,17 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0001_initial'),
+        ("courses", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='course',
-            name='max_participants',
+            model_name="course",
+            name="max_participants",
         ),
         migrations.AddField(
-            model_name='location',
-            name='max_participants',
-            field=models.PositiveIntegerField(default=10, verbose_name='Max. Teilnehmer'),
+            model_name="location",
+            name="max_participants",
+            field=models.PositiveIntegerField(
+                default=10, verbose_name="Max. Teilnehmer"
+            ),
         ),
     ]

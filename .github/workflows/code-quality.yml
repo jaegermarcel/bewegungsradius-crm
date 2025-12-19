@@ -1,0 +1,36 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+        cache: 'pip'
+
+    - name: Install linters
+      run: |
+        pip install flake8 black isort mypy
+
+    - name: Run Black (formatting check)
+      run: black --check .
+
+    - name: Run isort (import sorting)
+      run: isort --check-only .
+
+    - name: Run flake8 (linting)
+      run: flake8 .
+
+    - name: Run mypy (type checking)
+      run: mypy . --ignore-missing-imports

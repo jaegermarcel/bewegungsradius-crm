@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('invoices', '0004_alter_invoice_is_prevention_certified'),
+        ("invoices", "0004_alter_invoice_is_prevention_certified"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='invoice',
-            name='course_duration',
-            field=models.IntegerField(verbose_name='Dauer pro Einheit (Minuten)'),
+            model_name="invoice",
+            name="course_duration",
+            field=models.IntegerField(verbose_name="Dauer pro Einheit (Minuten)"),
         ),
         migrations.AlterField(
-            model_name='invoice',
-            name='course_units',
-            field=models.IntegerField(verbose_name='Anzahl Kurseinheiten'),
+            model_name="invoice",
+            name="course_units",
+            field=models.IntegerField(verbose_name="Anzahl Kurseinheiten"),
         ),
     ]

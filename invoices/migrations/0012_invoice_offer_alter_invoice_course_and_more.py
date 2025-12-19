@@ -7,30 +7,53 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0018_course_completion_email_sent_and_more'),
-        ('customers', '0013_contactchannel_customer_contact_channel'),
-        ('invoices', '0011_invoice_email_sent_invoice_email_sent_at'),
-        ('offers', '0010_alter_offer_course_type_alter_offer_title'),
+        ("courses", "0018_course_completion_email_sent_and_more"),
+        ("customers", "0013_contactchannel_customer_contact_channel"),
+        ("invoices", "0011_invoice_email_sent_invoice_email_sent_at"),
+        ("offers", "0010_alter_offer_course_type_alter_offer_title"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='invoice',
-            name='offer',
-            field=models.ForeignKey(blank=True, help_text='Angebot (für 10er-Karten, Workshops, etc.)', null=True, on_delete=django.db.models.deletion.PROTECT, related_name='invoices', to='offers.offer', verbose_name='Angebot'),
+            model_name="invoice",
+            name="offer",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Angebot (für 10er-Karten, Workshops, etc.)",
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="invoices",
+                to="offers.offer",
+                verbose_name="Angebot",
+            ),
         ),
         migrations.AlterField(
-            model_name='invoice',
-            name='course',
-            field=models.ForeignKey(blank=True, help_text='Kurs (für normale Kurse)', null=True, on_delete=django.db.models.deletion.PROTECT, related_name='invoices', to='courses.course', verbose_name='Kurs'),
+            model_name="invoice",
+            name="course",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Kurs (für normale Kurse)",
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="invoices",
+                to="courses.course",
+                verbose_name="Kurs",
+            ),
         ),
         migrations.AlterField(
-            model_name='invoice',
-            name='course_duration',
-            field=models.IntegerField(blank=True, null=True, verbose_name='Dauer pro Einheit (Minuten)'),
+            model_name="invoice",
+            name="course_duration",
+            field=models.IntegerField(
+                blank=True, null=True, verbose_name="Dauer pro Einheit (Minuten)"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='invoice',
-            constraint=models.CheckConstraint(condition=models.Q(('course__isnull', False), ('offer__isnull', False), _connector='OR'), name='invoice_has_course_or_offer'),
+            model_name="invoice",
+            constraint=models.CheckConstraint(
+                condition=models.Q(
+                    ("course__isnull", False), ("offer__isnull", False), _connector="OR"
+                ),
+                name="invoice_has_course_or_offer",
+            ),
         ),
     ]

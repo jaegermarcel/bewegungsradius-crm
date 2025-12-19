@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0011_alter_course_end_date'),
+        ("courses", "0011_alter_course_end_date"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='course',
-            name='is_active',
-            field=models.BooleanField(default=True, help_text='Inaktive Kurse werden nicht in der Hauptliste angezeigt', verbose_name='Aktiv'),
+            model_name="course",
+            name="is_active",
+            field=models.BooleanField(
+                default=True,
+                help_text="Inaktive Kurse werden nicht in der Hauptliste angezeigt",
+                verbose_name="Aktiv",
+            ),
         ),
     ]

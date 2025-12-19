@@ -7,34 +7,40 @@ Unabhängig von Celery/Django Admin - Pure Business Logic
 ✅ NUR Glückwünsche - KEIN Rabattcode!
 """
 
-from django.template.loader import render_to_string
-from django.core.mail import EmailMultiAlternatives
-from django.conf import settings
-from django.utils import timezone
 import logging
+
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
 
 # ==================== EXCEPTION CLASSES ====================
 
+
 class BirthdayEmailError(Exception):
     """Fehler beim Geburtstags-Email-Versand"""
+
     pass
 
 
 class BirthdayCheckError(BirthdayEmailError):
     """Fehler beim Geburtstagsprüfung"""
+
     pass
 
 
 # ==================== REPOSITORIES ====================
+
 
 class CustomerRepository:
     """Repository für Customer-Datenzugriff"""
 
     def __init__(self):
         from .models import Customer
+
         self.Customer = Customer
 
     def get_customers_with_birthday_today(self):
@@ -43,8 +49,7 @@ class CustomerRepository:
 
         try:
             customers = self.Customer.objects.filter(
-                birthday__month=today.month,
-                birthday__day=today.day
+                birthday__month=today.month, birthday__day=today.day
             ).exclude(birthday__isnull=True)
 
             logger.info(f"✓ {customers.count()} Kunden mit Geburtstag heute gefunden")
@@ -58,27 +63,33 @@ class CustomerRepository:
         """Gibt Kunden mit Geburtstag in X Tagen zurück"""
         try:
             from django.db.models import Q
-            from django.db.models.functions import ExtractMonth, ExtractDay
+            from django.db.models.functions import ExtractDay, ExtractMonth
 
             target_date = timezone.now().date() + timezone.timedelta(days=days)
 
-            customers = self.Customer.objects.annotate(
-                birth_month=ExtractMonth('birthday'),
-                birth_day=ExtractDay('birthday')
-            ).filter(
-                birth_month=target_date.month,
-                birth_day=target_date.day
-            ).exclude(birthday__isnull=True)
+            customers = (
+                self.Customer.objects.annotate(
+                    birth_month=ExtractMonth("birthday"),
+                    birth_day=ExtractDay("birthday"),
+                )
+                .filter(birth_month=target_date.month, birth_day=target_date.day)
+                .exclude(birthday__isnull=True)
+            )
 
-            logger.info(f"✓ {customers.count()} Kunden mit Geburtstag in {days} Tagen gefunden")
+            logger.info(
+                f"✓ {customers.count()} Kunden mit Geburtstag in {days} Tagen gefunden"
+            )
             return list(customers)
 
         except Exception as e:
-            logger.error(f"Fehler beim Abrufen von Geburtstagskunden in {days} Tagen: {e}")
+            logger.error(
+                f"Fehler beim Abrufen von Geburtstagskunden in {days} Tagen: {e}"
+            )
             raise BirthdayCheckError(f"Datenbankabfrage fehlgeschlagen: {e}")
 
 
 # ==================== VALUE OBJECTS ====================
+
 
 class BirthdayInfo:
     """Hält Geburtstagsinformationen"""
@@ -96,8 +107,8 @@ class BirthdayInfo:
         today = self.today
         born = self.customer.birthday
 
-        return today.year - born.year - (
-            (today.month, today.day) < (born.month, born.day)
+        return (
+            today.year - born.year - ((today.month, today.day) < (born.month, born.day))
         )
 
     @property
@@ -130,18 +141,15 @@ class BirthdayEmailResult:
     def add_error(self, customer_name: str, error_msg: str):
         """Registriert Fehler"""
         self.error_count += 1
-        self.failed_customers.append({
-            'name': customer_name,
-            'error': error_msg
-        })
+        self.failed_customers.append({"name": customer_name, "error": error_msg})
 
     def to_dict(self):
         """Konvertiert zu Dictionary"""
         return {
-            'sent': self.sent_count,
-            'errors': self.error_count,
-            'failed': self.failed_customers,
-            'total': self.sent_count + self.error_count
+            "sent": self.sent_count,
+            "errors": self.error_count,
+            "failed": self.failed_customers,
+            "total": self.sent_count + self.error_count,
         }
 
     def __repr__(self):
@@ -150,10 +158,11 @@ class BirthdayEmailResult:
 
 # ==================== SERVICES ====================
 
+
 class BirthdayTemplateService:
     """Service für Template-Rendering"""
 
-    BIRTHDAY_TEMPLATE = 'email/notifications/birthday_notification.html'
+    BIRTHDAY_TEMPLATE = "email/notifications/birthday_notification.html"
 
     def __init__(self, company_info):
         self.company_info = company_info
@@ -161,11 +170,14 @@ class BirthdayTemplateService:
     def render_birthday_email(self, customer, age: int) -> str:
         """Rendert Geburtstags-Email-Template"""
         try:
-            return render_to_string(self.BIRTHDAY_TEMPLATE, {
-                'customer': customer,
-                'age': age,
-                'company': self.company_info,
-            })
+            return render_to_string(
+                self.BIRTHDAY_TEMPLATE,
+                {
+                    "customer": customer,
+                    "age": age,
+                    "company": self.company_info,
+                },
+            )
         except Exception as e:
             logger.error(f"Template-Rendering fehlgeschlagen: {e}")
             raise BirthdayEmailError(f"Template-Rendering fehlgeschlagen: {e}")
@@ -201,8 +213,7 @@ class BirthdayEmailSender:
 
         # Rendere Template
         html_content = self.template_service.render_birthday_email(
-            customer,
-            birthday_info.age
+            customer, birthday_info.age
         )
 
         # Erstelle Subject
@@ -227,7 +238,9 @@ class BirthdayEmailSender:
                 logger.error(f"❌ Fehler für {customer.get_full_name()}: {e}")
             except Exception as e:
                 result.add_error(customer.get_full_name(), str(e))
-                logger.error(f"❌ Unerwarteter Fehler für {customer.get_full_name()}: {e}")
+                logger.error(
+                    f"❌ Unerwarteter Fehler für {customer.get_full_name()}: {e}"
+                )
 
         return result
 
@@ -239,7 +252,7 @@ class BirthdayEmailSender:
             subject=subject,
             body="Bitte verwende den HTML-Content",
             from_email=from_email,
-            to=[to_email]
+            to=[to_email],
         )
         email.attach_alternative(html_content, "text/html")
         email.send()
@@ -280,7 +293,9 @@ class BirthdayCheckService:
                 logger.info(f"ℹ️  Keine Geburtstage in {days} Tagen")
                 return BirthdayEmailResult()
 
-            logger.info(f"📅 Versende Voraus-Benachrichtigungen an {len(customers)} Kunden...")
+            logger.info(
+                f"📅 Versende Voraus-Benachrichtigungen an {len(customers)} Kunden..."
+            )
             result = self.sender.send_bulk_birthday_emails(customers)
 
             return result
@@ -291,6 +306,7 @@ class BirthdayCheckService:
 
 
 # ==================== LOGGER ====================
+
 
 class BirthdayLogger:
     """Service für Logging - Single Responsibility"""

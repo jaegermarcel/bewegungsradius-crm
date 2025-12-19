@@ -1,25 +1,30 @@
-import os
 import logging
+import os
+
+from django.conf import settings
 from django.template.loader import render_to_string
 from weasyprint import HTML
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
 
 # ==================== Exception Classes ====================
 
+
 class PdfGenerationError(Exception):
     """Fehler bei PDF-Generierung"""
+
     pass
 
 
 class FileStorageError(Exception):
     """Fehler beim Speichern von Dateien"""
+
     pass
 
 
 # ==================== HTML to PDF Converter ====================
+
 
 class HtmlToPdfConverter:
     """Konvertiert HTML-String zu PDF-Bytes (Generisch)"""
@@ -52,6 +57,7 @@ class HtmlToPdfConverter:
 
 # ==================== Template Rendering ====================
 
+
 class TemplateRenderer:
     """Rendert beliebige Templates
 
@@ -76,11 +82,14 @@ class TemplateRenderer:
             logger.info(f"Template {template_name} rendered: {len(html)} bytes")
             return html
         except Exception as e:
-            logger.error(f"Template rendering failed for {template_name}: {e}", exc_info=True)
+            logger.error(
+                f"Template rendering failed for {template_name}: {e}", exc_info=True
+            )
             raise PdfGenerationError(f"Template-Rendering fehlgeschlagen: {e}")
 
 
 # ==================== File Storage ====================
+
 
 class ConsumeFileStorage:
     """Speichert Dateien im consume-Verzeichnis (Paperless-Integration)
@@ -113,7 +122,7 @@ class ConsumeFileStorage:
             directory = self._get_or_create_directory()
             filepath = os.path.join(directory, filename)
 
-            with open(filepath, 'wb') as f:
+            with open(filepath, "wb") as f:
                 f.write(content)
 
             logger.info(f"File saved to consume: {filepath} ({len(content)} bytes)")
@@ -143,10 +152,11 @@ class ConsumeFileStorage:
 
     def _get_directory(self) -> str:
         """Gibt consume-Verzeichnispfad zurück"""
-        return os.path.join(self.base_dir, 'consume')
+        return os.path.join(self.base_dir, "consume")
 
 
 # ==================== Core PDF Generation ====================
+
 
 class PdfGenerator:
     """Generiert PDFs aus Templates
@@ -157,9 +167,9 @@ class PdfGenerator:
     """
 
     def __init__(
-            self,
-            template_renderer: TemplateRenderer,
-            converter: HtmlToPdfConverter,
+        self,
+        template_renderer: TemplateRenderer,
+        converter: HtmlToPdfConverter,
     ):
         self.template_renderer = template_renderer
         self.converter = converter
@@ -188,9 +198,9 @@ class PdfService:
     """
 
     def __init__(
-            self,
-            pdf_generator: PdfGenerator,
-            consume_storage: ConsumeFileStorage,
+        self,
+        pdf_generator: PdfGenerator,
+        consume_storage: ConsumeFileStorage,
     ):
         self.pdf_generator = pdf_generator
         self.consume_storage = consume_storage
@@ -211,10 +221,7 @@ class PdfService:
         return pdf_bytes
 
     def generate_and_save(
-            self,
-            template_name: str,
-            context: dict,
-            filename: str
+        self, template_name: str, context: dict, filename: str
     ) -> bytes:
         """Generiert PDF und speichert im consume-Verzeichnis
 
@@ -238,6 +245,7 @@ class PdfService:
 
 
 # ==================== Factory ====================
+
 
 class PdfServiceFactory:
     """Factory für PdfService

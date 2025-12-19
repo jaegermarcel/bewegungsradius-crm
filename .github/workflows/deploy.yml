@@ -1,0 +1,29 @@
+name: Deploy to Production
+
+on:
+  workflow_run:
+    workflows: ["Tests & Coverage"]
+    branches: [main]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Deploy to Production
+      run: |
+        echo "🚀 Deploying to production..."
+        echo "Branch: ${{ github.event.workflow_run.head_branch }}"
+        echo "Commit: ${{ github.event.workflow_run.head_sha }}"
+        
+        # Hier dein Deployment-Code:
+        # SSH, Docker, Railway, etc.
+
+    - name: Notify success
+      run: |
+        echo "✅ Deployment completed successfully!"

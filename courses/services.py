@@ -1,13 +1,14 @@
-from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut, GeocoderServiceError
-from django.contrib.gis.geos import Point
-from workalendar.europe import Bavaria
-from datetime import timedelta, time
-import time as time_module
-from django.utils import timezone as tz
-from django_celery_beat.models import PeriodicTask, ClockedSchedule
 import json
 import logging
+import time as time_module
+from datetime import time, timedelta
+
+from django.contrib.gis.geos import Point
+from django.utils import timezone as tz
+from django_celery_beat.models import ClockedSchedule, PeriodicTask
+from geopy.exc import GeocoderServiceError, GeocoderTimedOut
+from geopy.geocoders import Nominatim
+from workalendar.europe import Bavaria
 
 logger = logging.getLogger(__name__)
 
@@ -54,10 +55,9 @@ class CourseHolidayCalculator:
         holidays = []
         for year in range(start_date.year, end_date.year + 1):
             year_holidays = self.cal.holidays(year)
-            holidays.extend([
-                h[0] for h in year_holidays
-                if start_date <= h[0] <= end_date
-            ])
+            holidays.extend(
+                [h[0] for h in year_holidays if start_date <= h[0] <= end_date]
+            )
 
         return sorted(holidays)
 
@@ -87,11 +87,13 @@ class CourseHolidayCalculator:
         for holiday in holidays:
             if holiday.weekday() == weekday:
                 holiday_name = self.get_holiday_name(holiday)
-                warnings.append({
-                    'date': holiday,
-                    'name': holiday_name or 'Feiertag',
-                    'message': f"⚠️ {holiday.strftime('%d.%m.%Y')} ({holiday_name or 'Feiertag'}) - Kurs fällt aus"
-                })
+                warnings.append(
+                    {
+                        "date": holiday,
+                        "name": holiday_name or "Feiertag",
+                        "message": f"⚠️ {holiday.strftime('%d.%m.%Y')} ({holiday_name or 'Feiertag'}) - Kurs fällt aus",
+                    }
+                )
 
         return warnings
 
@@ -139,7 +141,7 @@ class CeleryTaskManager:
     EMAIL_LEAD_TIME_DAYS = 2  # 2 Tage vor Kursbeginn
     EMAIL_SEND_HOUR = 8  # 08:00 Uhr
 
-    def get_task_name(self, course, task_type='start'):
+    def get_task_name(self, course, task_type="start"):
         """
         🔧 IMPROVED: Generiert aussagekräftigen Task-Namen
 
@@ -149,16 +151,16 @@ class CeleryTaskManager:
         - "Kursstart Email - Pilates Grundkurs 25.11-06.12, 09:00-10:00, Studio A"
         - "Kurs-Abschluss Email - Yoga Advanced 10.11-15.12, 18:30-19:30, Online"
         """
-        prefix = "Kursstart Email" if task_type == 'start' else "Kurs-Abschluss Email"
+        prefix = "Kursstart Email" if task_type == "start" else "Kurs-Abschluss Email"
 
         title = course.offer.title if course.offer else "Unbekannter Kurs"
 
-        start_date = course.start_date.strftime('%d.%m') if course.start_date else "?"
-        end_date = course.end_date.strftime('%d.%m') if course.end_date else "?"
+        start_date = course.start_date.strftime("%d.%m") if course.start_date else "?"
+        end_date = course.end_date.strftime("%d.%m") if course.end_date else "?"
         timerange = f"{start_date}-{end_date}"
 
-        start_time = course.start_time.strftime('%H:%M') if course.start_time else "?"
-        end_time = course.end_time.strftime('%H:%M') if course.end_time else "?"
+        start_time = course.start_time.strftime("%H:%M") if course.start_time else "?"
+        end_time = course.end_time.strftime("%H:%M") if course.end_time else "?"
         time_str = f"{start_time}-{end_time}"
 
         location = course.location.name if course.location else "Online"
@@ -180,7 +182,9 @@ class CeleryTaskManager:
         # Falls Zeitpunkt in der Vergangenheit liegt, verschiebe auf jetzt + 10 Min
         now = tz.now()
         if email_send_datetime <= now:
-            logger.warning(f"Start-Email Task-Zeit in Vergangenheit. Verschiebe auf jetzt + 10 Min.")
+            logger.warning(
+                f"Start-Email Task-Zeit in Vergangenheit. Verschiebe auf jetzt + 10 Min."
+            )
             email_send_datetime = now + timedelta(minutes=10)
 
         return email_send_datetime
@@ -191,14 +195,14 @@ class CeleryTaskManager:
             # Fallback: 18:00 Uhr wenn keine Endzeit gesetzt
             end_time = time(18, 0)
 
-        email_send_datetime = tz.make_aware(
-            tz.datetime.combine(end_date, end_time)
-        )
+        email_send_datetime = tz.make_aware(tz.datetime.combine(end_date, end_time))
 
         # Falls Zeitpunkt in der Vergangenheit liegt, verschiebe auf jetzt + 10 Min
         now = tz.now()
         if email_send_datetime <= now:
-            logger.warning(f"Completion-Email Task-Zeit in Vergangenheit. Verschiebe auf jetzt + 10 Min.")
+            logger.warning(
+                f"Completion-Email Task-Zeit in Vergangenheit. Verschiebe auf jetzt + 10 Min."
+            )
             email_send_datetime = now + timedelta(minutes=10)
 
         return email_send_datetime
@@ -219,10 +223,10 @@ class CeleryTaskManager:
                 f"Task wird NICHT erstellt/aktualisiert."
             )
             # Lösche existierende Tasks wenn E-Mail bereits versendet
-            self._delete_task_if_exists(course, task_type='start')
+            self._delete_task_if_exists(course, task_type="start")
             return
 
-        task_name = self.get_task_name(course, task_type='start')
+        task_name = self.get_task_name(course, task_type="start")
         email_send_datetime = self.calculate_email_send_datetime(course.start_date)
 
         try:
@@ -235,17 +239,21 @@ class CeleryTaskManager:
             task_exists = PeriodicTask.objects.filter(name=task_name).exists()
 
             if task_exists:
-                self._update_existing_task(task_name, clocked_schedule, email_send_datetime)
+                self._update_existing_task(
+                    task_name, clocked_schedule, email_send_datetime
+                )
             else:
                 self._create_new_task(
                     task_name,
                     course.id,
                     clocked_schedule,
-                    'courses.tasks.send_course_start_email'
+                    "courses.tasks.send_course_start_email",
                 )
 
         except Exception as e:
-            logger.error(f"Fehler beim Start-Email Task Management für Kurs {course.id}: {e}")
+            logger.error(
+                f"Fehler beim Start-Email Task Management für Kurs {course.id}: {e}"
+            )
 
     def manage_course_completion_email_task(self, course):
         """✅ Erstellt oder aktualisiert Celery Task für Completion-Email
@@ -263,11 +271,13 @@ class CeleryTaskManager:
                 f"Task wird NICHT erstellt/aktualisiert."
             )
             # Lösche existierende Tasks wenn E-Mail bereits versendet
-            self._delete_task_if_exists(course, task_type='completion')
+            self._delete_task_if_exists(course, task_type="completion")
             return
 
-        task_name = self.get_task_name(course, task_type='completion')
-        email_send_datetime = self.calculate_completion_email_send_datetime(course.end_date, course.end_time)
+        task_name = self.get_task_name(course, task_type="completion")
+        email_send_datetime = self.calculate_completion_email_send_datetime(
+            course.end_date, course.end_time
+        )
 
         try:
             # Hole oder erstelle ClockedSchedule
@@ -279,17 +289,21 @@ class CeleryTaskManager:
             task_exists = PeriodicTask.objects.filter(name=task_name).exists()
 
             if task_exists:
-                self._update_existing_task(task_name, clocked_schedule, email_send_datetime)
+                self._update_existing_task(
+                    task_name, clocked_schedule, email_send_datetime
+                )
             else:
                 self._create_new_task(
                     task_name,
                     course.id,
                     clocked_schedule,
-                    'courses.tasks.send_course_completion_email'
+                    "courses.tasks.send_course_completion_email",
                 )
 
         except Exception as e:
-            logger.error(f"Fehler beim Completion-Email Task Management für Kurs {course.id}: {e}")
+            logger.error(
+                f"Fehler beim Completion-Email Task Management für Kurs {course.id}: {e}"
+            )
 
     def _create_new_task(self, task_name, course_id, clocked_schedule, task_function):
         """Erstellt neue Celery Task"""
@@ -313,7 +327,7 @@ class CeleryTaskManager:
         else:
             logger.debug(f"✓ Celery Task EXISTIERT: {task_name} (keine Änderung)")
 
-    def _delete_task_if_exists(self, course, task_type='start'):
+    def _delete_task_if_exists(self, course, task_type="start"):
         """Löscht Task wenn vorhanden (für bereits versendete E-Mails)"""
         task_name = self.get_task_name(course, task_type=task_type)
         try:
@@ -326,7 +340,7 @@ class CeleryTaskManager:
     def delete_course_task(self, course):
         """✅ Löscht BEIDE Tasks (Start + Completion) für einen Kurs"""
         # Lösche Start-Email Task
-        start_task_name = self.get_task_name(course, task_type='start')
+        start_task_name = self.get_task_name(course, task_type="start")
         try:
             task = PeriodicTask.objects.get(name=start_task_name)
             task.delete()
@@ -335,7 +349,7 @@ class CeleryTaskManager:
             pass
 
         # Lösche Completion-Email Task
-        completion_task_name = self.get_task_name(course, task_type='completion')
+        completion_task_name = self.get_task_name(course, task_type="completion")
         try:
             task = PeriodicTask.objects.get(name=completion_task_name)
             task.delete()
@@ -375,8 +389,7 @@ class CourseStatusChecker:
         from courses.models import Course
 
         expired_courses = Course.objects.filter(
-            end_date__lt=tz.now().date(),
-            is_active=True
+            end_date__lt=tz.now().date(), is_active=True
         )
 
         count = expired_courses.update(is_active=False)

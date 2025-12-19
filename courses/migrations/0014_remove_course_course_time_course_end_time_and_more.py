@@ -6,22 +6,32 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0013_course_course_time'),
+        ("courses", "0013_course_course_time"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='course',
-            name='course_time',
+            model_name="course",
+            name="course_time",
         ),
         migrations.AddField(
-            model_name='course',
-            name='end_time',
-            field=models.TimeField(blank=True, help_text='Z.B. 10:00 Uhr', null=True, verbose_name='Endzeit'),
+            model_name="course",
+            name="end_time",
+            field=models.TimeField(
+                blank=True,
+                help_text="Z.B. 10:00 Uhr",
+                null=True,
+                verbose_name="Endzeit",
+            ),
         ),
         migrations.AddField(
-            model_name='course',
-            name='start_time',
-            field=models.TimeField(blank=True, help_text='Z.B. 10:00 Uhr', null=True, verbose_name='Startzeit'),
+            model_name="course",
+            name="start_time",
+            field=models.TimeField(
+                blank=True,
+                help_text="Z.B. 10:00 Uhr",
+                null=True,
+                verbose_name="Startzeit",
+            ),
         ),
     ]

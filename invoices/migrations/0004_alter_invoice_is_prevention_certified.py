@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('invoices', '0003_invoice_cancelled_at_and_more'),
+        ("invoices", "0003_invoice_cancelled_at_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='invoice',
-            name='is_prevention_certified',
-            field=models.BooleanField(default=True, verbose_name='Zertifiziert nach § 20 SGBV'),
+            model_name="invoice",
+            name="is_prevention_certified",
+            field=models.BooleanField(
+                default=True, verbose_name="Zertifiziert nach § 20 SGBV"
+            ),
         ),
     ]

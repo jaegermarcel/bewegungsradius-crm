@@ -6,28 +6,40 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0003_alter_course_special'),
-        ('customers', '0004_customer_archived_at_customer_is_active'),
+        ("courses", "0003_alter_course_special"),
+        ("customers", "0004_customer_archived_at_customer_is_active"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='course',
-            name='participants',
+            model_name="course",
+            name="participants",
         ),
         migrations.AddField(
-            model_name='course',
-            name='participants_inperson',
-            field=models.ManyToManyField(blank=True, related_name='courses_inperson', to='customers.customer', verbose_name='Teilnehmer (Präsenz)'),
+            model_name="course",
+            name="participants_inperson",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="courses_inperson",
+                to="customers.customer",
+                verbose_name="Teilnehmer (Präsenz)",
+            ),
         ),
         migrations.AddField(
-            model_name='course',
-            name='participants_online',
-            field=models.ManyToManyField(blank=True, related_name='courses_online', to='customers.customer', verbose_name='Teilnehmer (Online)'),
+            model_name="course",
+            name="participants_online",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="courses_online",
+                to="customers.customer",
+                verbose_name="Teilnehmer (Online)",
+            ),
         ),
         migrations.AlterField(
-            model_name='location',
-            name='max_participants',
-            field=models.PositiveIntegerField(default=10, verbose_name='Max. Teilnehmer (Präsenz)'),
+            model_name="location",
+            name="max_participants",
+            field=models.PositiveIntegerField(
+                default=10, verbose_name="Max. Teilnehmer (Präsenz)"
+            ),
         ),
     ]

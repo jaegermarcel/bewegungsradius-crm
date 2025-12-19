@@ -13,35 +13,35 @@ class TestCompanyInfoSingleton:
         assert company.id is not None
         assert company.name
         assert company.email
-        assert company.iban == 'DE89370400440532013000'
+        assert company.iban == "DE89370400440532013000"
 
     def test_company_info_all_fields(self):
         """Test: Alle Felder werden gesetzt"""
         company = CompanyInfoFactory(
-            name='Test Firma GmbH',
-            street='Hauptstraße',
-            house_number='42',
-            postal_code='70794',
-            city='Filderstadt',
-            phone='+49 123 456789',
-            email='info@test.de',
-            tax_number='12345678901'
+            name="Test Firma GmbH",
+            street="Hauptstraße",
+            house_number="42",
+            postal_code="70794",
+            city="Filderstadt",
+            phone="+49 123 456789",
+            email="info@test.de",
+            tax_number="12345678901",
         )
 
-        assert company.name == 'Test Firma GmbH'
-        assert company.street == 'Hauptstraße'
-        assert company.house_number == '42'
-        assert company.postal_code == '70794'
-        assert company.city == 'Filderstadt'
-        assert company.phone == '+49 123 456789'
-        assert company.email == 'info@test.de'
-        assert company.tax_number == '12345678901'
+        assert company.name == "Test Firma GmbH"
+        assert company.street == "Hauptstraße"
+        assert company.house_number == "42"
+        assert company.postal_code == "70794"
+        assert company.city == "Filderstadt"
+        assert company.phone == "+49 123 456789"
+        assert company.email == "info@test.de"
+        assert company.tax_number == "12345678901"
 
     def test_company_info_iban_format(self):
         """Test: IBAN Format ist korrekt"""
         company = CompanyInfoFactory()
 
-        assert company.iban.startswith('DE')
+        assert company.iban.startswith("DE")
         assert len(company.iban) == 22
 
     def test_company_info_bic_format(self):
@@ -54,19 +54,17 @@ class TestCompanyInfoSingleton:
     def test_company_info_bank_details(self):
         """Test: Bank-Details sind vollständig"""
         company = CompanyInfoFactory(
-            bank_name='Deutsche Bank',
-            iban='DE89370400440532013000',
-            bic='COBADEDDXXX'
+            bank_name="Deutsche Bank", iban="DE89370400440532013000", bic="COBADEDDXXX"
         )
 
-        assert company.bank_name == 'Deutsche Bank'
-        assert company.iban == 'DE89370400440532013000'
-        assert company.bic == 'COBADEDDXXX'
+        assert company.bank_name == "Deutsche Bank"
+        assert company.iban == "DE89370400440532013000"
+        assert company.bic == "COBADEDDXXX"
 
     def test_company_info_string_representation(self):
         """Test: __str__ gibt Namen zurück"""
-        company = CompanyInfoFactory(name='Fitness Plus GmbH')
-        assert str(company) == 'Fitness Plus GmbH'
+        company = CompanyInfoFactory(name="Fitness Plus GmbH")
+        assert str(company) == "Fitness Plus GmbH"
 
     def test_company_info_logo_optional(self):
         """Test: Logo ist optional (blank=True, null=True)
@@ -76,7 +74,7 @@ class TestCompanyInfoSingleton:
         company = CompanyInfoFactory(logo=None)
 
         # ✅ RICHTIG: ImageField.name ist None oder ''
-        assert company.logo.name is None or company.logo.name == ''
+        assert company.logo.name is None or company.logo.name == ""
 
 
 class TestCompanyInfoIntegration:
@@ -89,10 +87,7 @@ class TestCompanyInfoIntegration:
         """
         from tests.factories import InvoiceFactory
 
-        company = CompanyInfoFactory(
-            name='Test Company',
-            tax_number='12345678901'
-        )
+        company = CompanyInfoFactory(name="Test Company", tax_number="12345678901")
 
         # ✅ KORRIGIERT: Mehrere Mocking-Strategien
         # Versuche verschiedene Patch-Pfade
@@ -100,7 +95,7 @@ class TestCompanyInfoIntegration:
 
         # Strategie 1: Mocking mit create=True (für optional imports)
         try:
-            with patch('courses.models.geocoder', create=True) as mock_geocoder:
+            with patch("courses.models.geocoder", create=True) as mock_geocoder:
                 mock_geocoder.geocode.return_value = None
                 invoice = InvoiceFactory()
                 patched = True
@@ -110,7 +105,7 @@ class TestCompanyInfoIntegration:
         # Strategie 2: Wenn Strategie 1 nicht funktioniert
         if not patched:
             try:
-                with patch.object(Course, 'save', wraps=Course.save):
+                with patch.object(Course, "save", wraps=Course.save):
                     invoice = InvoiceFactory()
                     patched = True
             except (AttributeError, ImportError):
@@ -121,7 +116,7 @@ class TestCompanyInfoIntegration:
             pytest.skip("Geocoding konnte nicht gemockt werden")
 
         # Assertions
-        assert CompanyInfo.objects.filter(name='Test Company').exists()
+        assert CompanyInfo.objects.filter(name="Test Company").exists()
         assert invoice.id is not None
 
     def test_multiple_companies_not_possible(self):
@@ -143,6 +138,7 @@ class TestCompanyInfoIntegration:
 # ============================================================
 # Optional: Fixtures
 # ============================================================
+
 
 @pytest.fixture
 def company(db):
@@ -166,8 +162,10 @@ def company_fresh(db):
 3. geocoder mocking mit create=True oder wraps
 """
 
-import pytest
 from unittest.mock import patch
+
+import pytest
+
 from company.models import CompanyInfo
 from courses.models import Course
 from tests.factories import CompanyInfoFactory
@@ -185,35 +183,35 @@ class TestCompanyInfoSingleton:
         assert company.id is not None
         assert company.name
         assert company.email
-        assert company.iban == 'DE89370400440532013000'
+        assert company.iban == "DE89370400440532013000"
 
     def test_company_info_all_fields(self):
         """Test: Alle Felder werden gesetzt"""
         company = CompanyInfoFactory(
-            name='Test Firma GmbH',
-            street='Hauptstraße',
-            house_number='42',
-            postal_code='70794',
-            city='Filderstadt',
-            phone='+49 123 456789',
-            email='info@test.de',
-            tax_number='12345678901'
+            name="Test Firma GmbH",
+            street="Hauptstraße",
+            house_number="42",
+            postal_code="70794",
+            city="Filderstadt",
+            phone="+49 123 456789",
+            email="info@test.de",
+            tax_number="12345678901",
         )
 
-        assert company.name == 'Test Firma GmbH'
-        assert company.street == 'Hauptstraße'
-        assert company.house_number == '42'
-        assert company.postal_code == '70794'
-        assert company.city == 'Filderstadt'
-        assert company.phone == '+49 123 456789'
-        assert company.email == 'info@test.de'
-        assert company.tax_number == '12345678901'
+        assert company.name == "Test Firma GmbH"
+        assert company.street == "Hauptstraße"
+        assert company.house_number == "42"
+        assert company.postal_code == "70794"
+        assert company.city == "Filderstadt"
+        assert company.phone == "+49 123 456789"
+        assert company.email == "info@test.de"
+        assert company.tax_number == "12345678901"
 
     def test_company_info_iban_format(self):
         """Test: IBAN Format ist korrekt"""
         company = CompanyInfoFactory()
 
-        assert company.iban.startswith('DE')
+        assert company.iban.startswith("DE")
         assert len(company.iban) == 22
 
     def test_company_info_bic_format(self):
@@ -226,19 +224,17 @@ class TestCompanyInfoSingleton:
     def test_company_info_bank_details(self):
         """Test: Bank-Details sind vollständig"""
         company = CompanyInfoFactory(
-            bank_name='Deutsche Bank',
-            iban='DE89370400440532013000',
-            bic='COBADEDDXXX'
+            bank_name="Deutsche Bank", iban="DE89370400440532013000", bic="COBADEDDXXX"
         )
 
-        assert company.bank_name == 'Deutsche Bank'
-        assert company.iban == 'DE89370400440532013000'
-        assert company.bic == 'COBADEDDXXX'
+        assert company.bank_name == "Deutsche Bank"
+        assert company.iban == "DE89370400440532013000"
+        assert company.bic == "COBADEDDXXX"
 
     def test_company_info_string_representation(self):
         """Test: __str__ gibt Namen zurück"""
-        company = CompanyInfoFactory(name='Fitness Plus GmbH')
-        assert str(company) == 'Fitness Plus GmbH'
+        company = CompanyInfoFactory(name="Fitness Plus GmbH")
+        assert str(company) == "Fitness Plus GmbH"
 
     def test_company_info_logo_optional(self):
         """Test: Logo ist optional (blank=True, null=True)
@@ -248,7 +244,7 @@ class TestCompanyInfoSingleton:
         company = CompanyInfoFactory(logo=None)
 
         # ✅ RICHTIG: ImageField.name ist None oder ''
-        assert company.logo.name is None or company.logo.name == ''
+        assert company.logo.name is None or company.logo.name == ""
 
 
 class TestCompanyInfoIntegration:
@@ -261,10 +257,7 @@ class TestCompanyInfoIntegration:
         """
         from tests.factories import InvoiceFactory
 
-        company = CompanyInfoFactory(
-            name='Test Company',
-            tax_number='12345678901'
-        )
+        company = CompanyInfoFactory(name="Test Company", tax_number="12345678901")
 
         # ✅ KORRIGIERT: Mehrere Mocking-Strategien
         # Versuche verschiedene Patch-Pfade
@@ -272,7 +265,7 @@ class TestCompanyInfoIntegration:
 
         # Strategie 1: Mocking mit create=True (für optional imports)
         try:
-            with patch('courses.models.geocoder', create=True) as mock_geocoder:
+            with patch("courses.models.geocoder", create=True) as mock_geocoder:
                 mock_geocoder.geocode.return_value = None
                 invoice = InvoiceFactory()
                 patched = True
@@ -282,7 +275,7 @@ class TestCompanyInfoIntegration:
         # Strategie 2: Wenn Strategie 1 nicht funktioniert
         if not patched:
             try:
-                with patch.object(Course, 'save', wraps=Course.save):
+                with patch.object(Course, "save", wraps=Course.save):
                     invoice = InvoiceFactory()
                     patched = True
             except (AttributeError, ImportError):
@@ -293,7 +286,7 @@ class TestCompanyInfoIntegration:
             pytest.skip("Geocoding konnte nicht gemockt werden")
 
         # Assertions
-        assert CompanyInfo.objects.filter(name='Test Company').exists()
+        assert CompanyInfo.objects.filter(name="Test Company").exists()
         assert invoice.id is not None
 
     def test_multiple_companies_not_possible(self):
@@ -315,6 +308,7 @@ class TestCompanyInfoIntegration:
 # ============================================================
 # Optional: Fixtures
 # ============================================================
+
 
 @pytest.fixture
 def company(db):

@@ -6,13 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0007_course_is_zpp_certified_course_zpp_prevention_id'),
+        ("courses", "0007_course_is_zpp_certified_course_zpp_prevention_id"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='course',
-            name='course_type',
-            field=models.CharField(choices=[('pilates', 'Pilates'), ('body_workout', 'Body-Workout'), ('rueckbildung', 'Kräftigendes Beckenbodentraining'), ('personal_coach', 'Personal Coach')], default='pilates', max_length=20, verbose_name='Kursart'),
+            model_name="course",
+            name="course_type",
+            field=models.CharField(
+                choices=[
+                    ("pilates", "Pilates"),
+                    ("body_workout", "Body-Workout"),
+                    ("rueckbildung", "Kräftigendes Beckenbodentraining"),
+                    ("personal_coach", "Personal Coach"),
+                ],
+                default="pilates",
+                max_length=20,
+                verbose_name="Kursart",
+            ),
         ),
     ]

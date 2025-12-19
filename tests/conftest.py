@@ -5,34 +5,30 @@ ALLE Fixtures für das Projekt
 Enthält: Factory-Fixtures, DB-Config, Settings
 """
 
-import pytest
 from datetime import date, timedelta
+
+import pytest
+
+from tests.factories import (ActiveDiscountCodeFactory, CompanyInfoFactory,
+                             CourseFactory, CustomerDiscountCodeFactory,
+                             CustomerFactory, InvoiceFactory, LocationFactory,
+                             OfferFactory, ZPPCertificationFactory)
 
 # ============================================================
 # FACTORIES IMPORT
 # ============================================================
 
-from tests.factories import (
-    CompanyInfoFactory,
-    CustomerFactory,
-    CustomerDiscountCodeFactory,
-    ActiveDiscountCodeFactory,
-    CourseFactory,
-    LocationFactory,
-    OfferFactory,
-    ZPPCertificationFactory,
-    InvoiceFactory,
-)
 
 
 # ============================================================
 # DJANGO SETTINGS & CONFIG
 # ============================================================
 
+
 @pytest.fixture(autouse=True)
 def use_email_backend(settings):
     """Nutze In-Memory Email Backend"""
-    settings.EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+    settings.EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
 
 @pytest.fixture(autouse=True)
@@ -46,6 +42,7 @@ def celery_config(settings):
 def clear_cache():
     """Cache leeren vor jedem Test"""
     from django.core.cache import cache
+
     cache.clear()
     yield
 
@@ -53,6 +50,7 @@ def clear_cache():
 # ============================================================
 # COMPANY FIXTURES
 # ============================================================
+
 
 @pytest.fixture
 def company(db):
@@ -63,6 +61,7 @@ def company(db):
 # ============================================================
 # CUSTOMER FIXTURES
 # ============================================================
+
 
 @pytest.fixture
 def customer(db):
@@ -92,6 +91,7 @@ def active_customers(db):
 # DISCOUNT CODE FIXTURES
 # ============================================================
 
+
 @pytest.fixture
 def discount_code(db, customer):
     """Standard Rabattcode (planned)"""
@@ -114,6 +114,7 @@ def multiple_discount_codes(db, customer):
 # LOCATION FIXTURES
 # ============================================================
 
+
 @pytest.fixture
 def location(db):
     """Basis Location"""
@@ -123,6 +124,7 @@ def location(db):
 # ============================================================
 # OFFER & ZPP FIXTURES
 # ============================================================
+
 
 @pytest.fixture
 def zpp_certification(db):
@@ -140,6 +142,7 @@ def offer(db):
 # COURSE FIXTURES
 # ============================================================
 
+
 @pytest.fixture
 def course(db, offer, location):
     """Basis Course mit Offer + Location"""
@@ -150,6 +153,7 @@ def course(db, offer, location):
 # INVOICE FIXTURES
 # ============================================================
 
+
 @pytest.fixture
 def invoice(db, customer, course):
     """Basis Invoice mit Customer + Course"""
@@ -159,6 +163,7 @@ def invoice(db, customer, course):
 # ============================================================
 # CUSTOM COMBINATION FIXTURES
 # ============================================================
+
 
 @pytest.fixture
 def customer_with_active_discount(db, customer):
@@ -172,8 +177,8 @@ def customer_with_expired_discount(db, customer):
     """Customer mit abgelaufenem Rabattcode"""
     expired_code = CustomerDiscountCodeFactory(
         customer=customer,
-        status='expired',
-        valid_until=date.today() - timedelta(days=1)
+        status="expired",
+        valid_until=date.today() - timedelta(days=1),
     )
     return customer, expired_code
 

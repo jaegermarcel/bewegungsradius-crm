@@ -1,7 +1,9 @@
+from datetime import timedelta
+
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 from django.utils import timezone
-from datetime import timedelta
+
 from courses.models import Course
 from customers.models import Customer, CustomerDiscountCode
 
@@ -16,11 +18,15 @@ class DiscountCodeDateCalculator:
         """Rückgabe: (valid_from, valid_until) als Tupel"""
         if course.end_date:
             valid_from = course.end_date
-            valid_until = course.end_date + timedelta(days=DiscountCodeDateCalculator.VALIDITY_DAYS)
+            valid_until = course.end_date + timedelta(
+                days=DiscountCodeDateCalculator.VALIDITY_DAYS
+            )
         else:
             today = timezone.now().date()
             valid_from = today
-            valid_until = today + timedelta(days=DiscountCodeDateCalculator.VALIDITY_DAYS)
+            valid_until = today + timedelta(
+                days=DiscountCodeDateCalculator.VALIDITY_DAYS
+            )
 
         return valid_from, valid_until
 
@@ -40,12 +46,12 @@ class DiscountCodeFactory:
             customer=customer,
             code=code,
             course=course,
-            discount_type='percentage',
+            discount_type="percentage",
             discount_value=cls.DEFAULT_DISCOUNT_VALUE,
-            reason='course_completed',
+            reason="course_completed",
             description=cls._build_description(course),
             valid_from=valid_from,
-            valid_until=valid_until
+            valid_until=valid_until,
         )
 
     @staticmethod
@@ -61,8 +67,7 @@ class DiscountCodeRepository:
     def find_existing_for_course(customer, course):
         """Sucht nach existierendem Code für Kurs"""
         return CustomerDiscountCode.objects.filter(
-            customer=customer,
-            description__icontains=f"Kurs {course.id}"
+            customer=customer, description__icontains=f"Kurs {course.id}"
         ).first()
 
     @staticmethod
@@ -71,14 +76,14 @@ class DiscountCodeRepository:
         return CustomerDiscountCode.objects.filter(
             customer=customer,
             description__icontains=f"Kurs {course.id}",
-            status__in=['planned', 'sent']
+            status__in=["planned", "sent"],
         )
 
     @staticmethod
     def cancel_codes(discount_codes, course):
         """Storniert alle übergebenen Codes"""
         for code in discount_codes:
-            code.status = 'cancelled'
+            code.status = "cancelled"
             code.cancelled_at = timezone.now()
             code.cancelled_reason = f"Kunde aus Kurs {course.id} entfernt"
             code.save()

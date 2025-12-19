@@ -6,17 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('offers', '0011_remove_offer_course_type_offer_format_and_more'),
+        ("offers", "0011_remove_offer_course_type_offer_format_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='offer',
-            name='ticket_validity_days',
+            model_name="offer",
+            name="ticket_validity_days",
         ),
         migrations.AddField(
-            model_name='offer',
-            name='ticket_validity_months',
-            field=models.IntegerField(default=6, help_text='Wie lange ist die Karte nach Kauf gültig? (z.B. 6 Monate)', verbose_name='Gültig für (Monate)'),
+            model_name="offer",
+            name="ticket_validity_months",
+            field=models.IntegerField(
+                default=6,
+                help_text="Wie lange ist die Karte nach Kauf gültig? (z.B. 6 Monate)",
+                verbose_name="Gültig für (Monate)",
+            ),
         ),
     ]

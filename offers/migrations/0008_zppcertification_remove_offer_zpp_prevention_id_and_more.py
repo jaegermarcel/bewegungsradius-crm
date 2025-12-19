@@ -8,42 +8,115 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('offers', '0007_offer_zpp_valid_until_alter_offer_zpp_prevention_id'),
+        ("offers", "0007_offer_zpp_valid_until_alter_offer_zpp_prevention_id"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ZPPCertification',
+            name="ZPPCertification",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('zpp_id', models.CharField(help_text='Z.B. KU-BE-ZCURFS', max_length=50, unique=True, verbose_name='ZPP-ID')),
-                ('name', models.CharField(help_text='Z.B. Pilates Präsens', max_length=200, verbose_name='Bezeichnung')),
-                ('official_title', models.CharField(help_text='Der offizielle Titel für die Zertifizierung', max_length=200, verbose_name='Offizieller Titel')),
-                ('format', models.CharField(choices=[('praesenz', 'Präsenz'), ('online', 'Online'), ('hybrid', 'Hybrid')], default='praesenz', max_length=50, verbose_name='Format')),
-                ('valid_from', models.DateField(default=django.utils.timezone.now, verbose_name='Gültig ab')),
-                ('valid_until', models.DateField(help_text='Ablaufdatum der Zertifizierung', verbose_name='Gültig bis')),
-                ('is_active', models.BooleanField(default=True, help_text='Nur aktive Zertifizierungen können verwendet werden', verbose_name='Aktiv')),
-                ('notes', models.TextField(blank=True, verbose_name='Notizen')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Erstellt am')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Aktualisiert am')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "zpp_id",
+                    models.CharField(
+                        help_text="Z.B. KU-BE-ZCURFS",
+                        max_length=50,
+                        unique=True,
+                        verbose_name="ZPP-ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Z.B. Pilates Präsens",
+                        max_length=200,
+                        verbose_name="Bezeichnung",
+                    ),
+                ),
+                (
+                    "official_title",
+                    models.CharField(
+                        help_text="Der offizielle Titel für die Zertifizierung",
+                        max_length=200,
+                        verbose_name="Offizieller Titel",
+                    ),
+                ),
+                (
+                    "format",
+                    models.CharField(
+                        choices=[
+                            ("praesenz", "Präsenz"),
+                            ("online", "Online"),
+                            ("hybrid", "Hybrid"),
+                        ],
+                        default="praesenz",
+                        max_length=50,
+                        verbose_name="Format",
+                    ),
+                ),
+                (
+                    "valid_from",
+                    models.DateField(
+                        default=django.utils.timezone.now, verbose_name="Gültig ab"
+                    ),
+                ),
+                (
+                    "valid_until",
+                    models.DateField(
+                        help_text="Ablaufdatum der Zertifizierung",
+                        verbose_name="Gültig bis",
+                    ),
+                ),
+                (
+                    "is_active",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Nur aktive Zertifizierungen können verwendet werden",
+                        verbose_name="Aktiv",
+                    ),
+                ),
+                ("notes", models.TextField(blank=True, verbose_name="Notizen")),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="Erstellt am"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="Aktualisiert am"),
+                ),
             ],
             options={
-                'verbose_name': 'ZPP-Zertifizierung',
-                'verbose_name_plural': 'ZPP-Zertifizierungen',
-                'ordering': ['-valid_until'],
+                "verbose_name": "ZPP-Zertifizierung",
+                "verbose_name_plural": "ZPP-Zertifizierungen",
+                "ordering": ["-valid_until"],
             },
         ),
         migrations.RemoveField(
-            model_name='offer',
-            name='zpp_prevention_id',
+            model_name="offer",
+            name="zpp_prevention_id",
         ),
         migrations.RemoveField(
-            model_name='offer',
-            name='zpp_valid_until',
+            model_name="offer",
+            name="zpp_valid_until",
         ),
         migrations.AddField(
-            model_name='offer',
-            name='zpp_certification',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='offers', to='offers.zppcertification', verbose_name='ZPP-Zertifizierung'),
+            model_name="offer",
+            name="zpp_certification",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="offers",
+                to="offers.zppcertification",
+                verbose_name="ZPP-Zertifizierung",
+            ),
         ),
     ]

@@ -6,8 +6,8 @@ def transfer_company_info_forward(apps, schema_editor):
     Migriert CompanyInfo von invoices zu company App
     """
     # Hole die alten und neuen Models
-    OldCompanyInfo = apps.get_model('invoices', 'CompanyInfo')
-    NewCompanyInfo = apps.get_model('company', 'CompanyInfo')
+    OldCompanyInfo = apps.get_model("invoices", "CompanyInfo")
+    NewCompanyInfo = apps.get_model("company", "CompanyInfo")
 
     # Lese alle Einträge aus der alten Tabelle
     old_entries = OldCompanyInfo.objects.all()
@@ -41,7 +41,7 @@ def transfer_company_info_backward(apps, schema_editor):
     """
     Rollback - löscht alle neuen Einträge
     """
-    NewCompanyInfo = apps.get_model('company', 'CompanyInfo')
+    NewCompanyInfo = apps.get_model("company", "CompanyInfo")
     count = NewCompanyInfo.objects.count()
     NewCompanyInfo.objects.all().delete()
     print(f"\n⏮️  Rollback: {count} Einträge gelöscht\n")
@@ -49,10 +49,12 @@ def transfer_company_info_backward(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('company', '0001_initial'),
-        ('invoices', '0008_invoice_discount_amount_invoice_discount_code_and_more'),
+        ("company", "0001_initial"),
+        ("invoices", "0008_invoice_discount_amount_invoice_discount_code_and_more"),
     ]
 
     operations = [
-        migrations.RunPython(transfer_company_info_forward, transfer_company_info_backward),
+        migrations.RunPython(
+            transfer_company_info_forward, transfer_company_info_backward
+        ),
     ]

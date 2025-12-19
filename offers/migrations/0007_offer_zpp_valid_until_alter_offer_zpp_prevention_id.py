@@ -6,18 +6,32 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('offers', '0006_alter_offer_course_duration_alter_offer_course_units'),
+        ("offers", "0006_alter_offer_course_duration_alter_offer_course_units"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='offer',
-            name='zpp_valid_until',
-            field=models.IntegerField(blank=True, help_text='Jahr bis wann die ZPP-Zertifizierung gültig ist, z.B. 2027', null=True, verbose_name='ZPP gültig bis (Jahr)'),
+            model_name="offer",
+            name="zpp_valid_until",
+            field=models.IntegerField(
+                blank=True,
+                help_text="Jahr bis wann die ZPP-Zertifizierung gültig ist, z.B. 2027",
+                null=True,
+                verbose_name="ZPP gültig bis (Jahr)",
+            ),
         ),
         migrations.AlterField(
-            model_name='offer',
-            name='zpp_prevention_id',
-            field=models.CharField(blank=True, choices=[('KU-BE-ZCURFS', 'Pilates Präsens'), ('KU-BE-XHQ7AR', 'Rückbildung Präsens'), ('KU-BE-SC4KUQ', 'Body-Workout Präsens')], max_length=50, verbose_name='ZPP Präventions-ID'),
+            model_name="offer",
+            name="zpp_prevention_id",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("KU-BE-ZCURFS", "Pilates Präsens"),
+                    ("KU-BE-XHQ7AR", "Rückbildung Präsens"),
+                    ("KU-BE-SC4KUQ", "Body-Workout Präsens"),
+                ],
+                max_length=50,
+                verbose_name="ZPP Präventions-ID",
+            ),
         ),
     ]

@@ -3,14 +3,15 @@ customers/services.py - Business Logic Layer
 ==============================================
 Alle E-Mail- und Kundenlogik, unabhängig von Django Admin
 """
+
+import logging
+import time
 from datetime import datetime
 
-from django.utils import timezone
-from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 from django.contrib.gis.geos import Point
-import time
-import logging
+from django.utils import timezone
+from geopy.exc import GeocoderServiceError, GeocoderTimedOut
+from geopy.geocoders import Nominatim
 
 logger = logging.getLogger(__name__)
 
@@ -51,13 +52,13 @@ class DiscountCodeValidator:
 
     def validate(self):
         """Rückgabe: (is_valid: bool, message: str)"""
-        if self.code.status == 'used':
+        if self.code.status == "used":
             return False, "Code wurde bereits verwendet"
 
-        if self.code.status == 'cancelled':
+        if self.code.status == "cancelled":
             return False, "Code wurde storniert"
 
-        if self.code.status == 'expired':
+        if self.code.status == "expired":
             return False, "Code ist abgelaufen"
 
         if not self._is_in_validity_period():
@@ -84,10 +85,10 @@ class DiscountCodeGenerator:
     """Service für Rabattcode-Generierung"""
 
     COURSE_INITIALS = {
-        'rueckbildung': 'RB',
-        'rückbildung': 'RB',
-        'pilates': 'P',
-        'body-workout': 'BW',
+        "rueckbildung": "RB",
+        "rückbildung": "RB",
+        "pilates": "P",
+        "body-workout": "BW",
     }
 
     def generate(self, course, customer):
@@ -115,14 +116,14 @@ class DiscountCodeGenerator:
             if key in course_title:
                 return initial
 
-        return 'XX'  # Fallback
+        return "XX"  # Fallback
 
     def _get_date_part(self, course):
         """Extrahiert Monat und Jahr aus Kurs-Enddatum"""
         if course.end_date:
-            return course.end_date.strftime('%m%y')
+            return course.end_date.strftime("%m%y")
 
-        return datetime.now().strftime('%m%y')
+        return datetime.now().strftime("%m%y")
 
     def _get_customer_initials(self, customer):
         """Extrahiert Initialen aus Kundennamen"""
@@ -137,7 +138,7 @@ class DiscountCodeGenerator:
 
         counter = 1
         while CustomerDiscountCode.objects.filter(
-                code=f"{base_code}{counter}"
+            code=f"{base_code}{counter}"
         ).exists():
             counter += 1
 
@@ -150,7 +151,7 @@ class DiscountCodeCalculator:
     @staticmethod
     def calculate_discount_amount(discount_code, amount):
         """Berechnet Rabattbetrag basierend auf Code-Typ"""
-        if discount_code.discount_type == 'percentage':
+        if discount_code.discount_type == "percentage":
             return amount * (discount_code.discount_value / 100)
 
         return min(discount_code.discount_value, amount)
@@ -167,7 +168,7 @@ class DiscountCodeFormatter:
     @staticmethod
     def format_discount_display(discount_code):
         """Formatiert Rabatt für Anzeige"""
-        if discount_code.discount_type == 'percentage':
+        if discount_code.discount_type == "percentage":
             return f"{discount_code.discount_value}%"
 
         return f"{discount_code.discount_value}€"

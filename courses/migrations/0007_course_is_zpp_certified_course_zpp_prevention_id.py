@@ -6,18 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0006_course_is_weekly_course_weekday_and_more'),
+        ("courses", "0006_course_is_weekly_course_weekday_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='course',
-            name='is_zpp_certified',
-            field=models.BooleanField(default=True, verbose_name='ZPP-zertifiziert'),
+            model_name="course",
+            name="is_zpp_certified",
+            field=models.BooleanField(default=True, verbose_name="ZPP-zertifiziert"),
         ),
         migrations.AddField(
-            model_name='course',
-            name='zpp_prevention_id',
-            field=models.CharField(blank=True, help_text='ID der Zentralen Prüfstelle Prävention', max_length=50, verbose_name='ZPP Präventions-ID'),
+            model_name="course",
+            name="zpp_prevention_id",
+            field=models.CharField(
+                blank=True,
+                help_text="ID der Zentralen Prüfstelle Prävention",
+                max_length=50,
+                verbose_name="ZPP Präventions-ID",
+            ),
         ),
     ]

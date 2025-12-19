@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0010_remove_course_course_type_and_more'),
+        ("courses", "0010_remove_course_course_type_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='course',
-            name='end_date',
-            field=models.DateField(blank=True, null=True, verbose_name='Enddatum'),
+            model_name="course",
+            name="end_date",
+            field=models.DateField(blank=True, null=True, verbose_name="Enddatum"),
         ),
     ]

@@ -8,27 +8,23 @@ courses/tests/test_models.py - Tests für Location und Course Models
 ✅ Integration Tests
 """
 
-import pytest
 from datetime import date, timedelta
+from unittest.mock import MagicMock, patch
+
+import pytest
 from django.contrib.gis.geos import Point
 from django.utils import timezone
-from unittest.mock import patch, MagicMock
 
 pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from courses.models import Location, Course
-from tests.factories import (
-    LocationFactory,
-    CourseFactory,
-    CourseWithParticipantsFactory,
-    CustomerFactory,
-    OfferFactory,
-)
-
+from courses.models import Course, Location
+from tests.factories import (CourseFactory, CourseWithParticipantsFactory,
+                             CustomerFactory, LocationFactory, OfferFactory)
 
 # ==================== FIXTURES ====================
+
 
 @pytest.fixture
 def location(db):
@@ -50,58 +46,50 @@ def course_with_participants(db):
 
 # ==================== LOCATION MODEL TESTS ====================
 
+
 class TestLocationModel:
     """Tests für Location Model"""
 
     def test_location_creation(self):
         """Test: Location wird erstellt"""
         location = LocationFactory(
-            name='Studio München',
-            street='Hauptstraße',
-            house_number='42',
-            postal_code='80801',
-            city='München'
+            name="Studio München",
+            street="Hauptstraße",
+            house_number="42",
+            postal_code="80801",
+            city="München",
         )
 
         assert location.id is not None
-        assert location.name == 'Studio München'
-        assert location.street == 'Hauptstraße'
-        assert location.postal_code == '80801'
+        assert location.name == "Studio München"
+        assert location.street == "Hauptstraße"
+        assert location.postal_code == "80801"
 
     def test_location_string_representation(self):
         """Test: __str__ gibt Name mit Teilnehmerzahl"""
-        location = LocationFactory(
-            name='Studio',
-            max_participants=15
-        )
+        location = LocationFactory(name="Studio", max_participants=15)
 
-        assert str(location) == 'Studio (max. 15 Teilnehmer)'
+        assert str(location) == "Studio (max. 15 Teilnehmer)"
 
     def test_location_get_full_address(self):
         """Test: get_full_address() kombiniert Adresse"""
         location = LocationFactory(
-            street='Hauptstraße',
-            house_number='42',
-            postal_code='80801',
-            city='München'
+            street="Hauptstraße", house_number="42", postal_code="80801", city="München"
         )
 
         full_address = location.get_full_address()
-        assert 'Hauptstraße 42' in full_address
-        assert '80801 München' in full_address
+        assert "Hauptstraße 42" in full_address
+        assert "80801 München" in full_address
 
     def test_location_get_full_address_with_missing_fields(self):
         """Test: get_full_address() mit fehlenden Feldern"""
         location = LocationFactory(
-            street='Hauptstraße',
-            house_number='',
-            postal_code='80801',
-            city='München'
+            street="Hauptstraße", house_number="", postal_code="80801", city="München"
         )
 
         full_address = location.get_full_address()
-        assert 'Hauptstraße' in full_address
-        assert '80801 München' in full_address
+        assert "Hauptstraße" in full_address
+        assert "80801 München" in full_address
 
     def test_location_coordinates_optional(self):
         """Test: Koordinaten sind optional"""
@@ -124,7 +112,7 @@ class TestLocationModel:
 
         assert before <= location.updated_at <= after
 
-    @patch('courses.models.LocationGeocoder')
+    @patch("courses.models.LocationGeocoder")
     def test_location_geocoding_on_save(self, mock_geocoder_class):
         """Test: Geocoding wird aufgerufen wenn nötig"""
         mock_geocoder = MagicMock()
@@ -132,17 +120,14 @@ class TestLocationModel:
         mock_geocoder.geocode.return_value = None
 
         location = LocationFactory(
-            street='Hauptstraße',
-            house_number='42',
-            city='München',
-            coordinates=None
+            street="Hauptstraße", house_number="42", city="München", coordinates=None
         )
 
         # Geocoding sollte aufgerufen worden sein
         mock_geocoder_class.assert_called()
         mock_geocoder.geocode.assert_called()
 
-    @patch('courses.models.LocationGeocoder')
+    @patch("courses.models.LocationGeocoder")
     def test_location_no_geocoding_if_coordinates_exist(self, mock_geocoder_class):
         """Test: Kein Geocoding wenn Koordinaten existieren"""
         mock_geocoder = MagicMock()
@@ -155,26 +140,24 @@ class TestLocationModel:
 
     def test_location_ordering(self):
         """Test: Locations sind alphabetisch sortiert"""
-        LocationFactory(name='Studio C')
-        LocationFactory(name='Studio A')
-        LocationFactory(name='Studio B')
+        LocationFactory(name="Studio C")
+        LocationFactory(name="Studio A")
+        LocationFactory(name="Studio B")
 
         locations = Location.objects.all()
         names = [loc.name for loc in locations]
-        assert names == ['Studio A', 'Studio B', 'Studio C']
+        assert names == ["Studio A", "Studio B", "Studio C"]
 
 
 # ==================== COURSE MODEL TESTS ====================
+
 
 class TestCourseModel:
     """Tests für Course Model"""
 
     def test_course_creation(self):
         """Test: Course wird erstellt"""
-        course = CourseFactory(
-            is_active=True,
-            is_weekly=True
-        )
+        course = CourseFactory(is_active=True, is_weekly=True)
 
         assert course.id is not None
         assert course.offer is not None
@@ -185,7 +168,7 @@ class TestCourseModel:
         """Test: __str__ gibt Title und Datum"""
         str_repr = str(course)
         assert course.offer.title in str_repr
-        assert course.start_date.strftime('%d.%m.%Y') in str_repr
+        assert course.start_date.strftime("%d.%m.%Y") in str_repr
 
     def test_course_weekday_auto_calculated(self):
         """Test: weekday wird automatisch berechnet"""
@@ -202,10 +185,7 @@ class TestCourseModel:
         start_time = time(10, 0)
         end_time = time(11, 30)
 
-        course = CourseFactory(
-            start_time=start_time,
-            end_time=end_time
-        )
+        course = CourseFactory(start_time=start_time, end_time=end_time)
 
         assert course.start_time == start_time
         assert course.end_time == end_time
@@ -221,6 +201,7 @@ class TestCourseModel:
 
 
 # ==================== COURSE PROPERTIES TESTS ====================
+
 
 class TestCourseProperties:
     """Tests für Course Properties"""
@@ -272,6 +253,7 @@ class TestCourseProperties:
 
 # ==================== COURSE METHODS TESTS ====================
 
+
 class TestCourseMethods:
     """Tests für Course Methods"""
 
@@ -302,10 +284,7 @@ class TestCourseMethods:
     def test_course_deactivate_if_expired_past_date(self):
         """Test: deactivate_if_expired() deaktiviert abgelaufene Kurse"""
         past_date = date.today() - timedelta(days=10)
-        course = CourseFactory(
-            end_date=past_date,
-            is_active=True
-        )
+        course = CourseFactory(end_date=past_date, is_active=True)
 
         result = course.deactivate_if_expired()
 
@@ -315,10 +294,7 @@ class TestCourseMethods:
     def test_course_deactivate_if_expired_future_date(self):
         """Test: deactivate_if_expired() ändert nichts für zukünftige Kurse"""
         future_date = date.today() + timedelta(days=30)
-        course = CourseFactory(
-            end_date=future_date,
-            is_active=True
-        )
+        course = CourseFactory(end_date=future_date, is_active=True)
 
         result = course.deactivate_if_expired()
 
@@ -328,16 +304,13 @@ class TestCourseMethods:
     def test_course_deactivate_if_expired_already_inactive(self):
         """Test: deactivate_if_expired() für bereits inaktive Kurse"""
         past_date = date.today() - timedelta(days=10)
-        course = CourseFactory(
-            end_date=past_date,
-            is_active=False
-        )
+        course = CourseFactory(end_date=past_date, is_active=False)
 
         result = course.deactivate_if_expired()
 
         assert result is False
 
-    @patch('courses.models.CourseHolidayCalculator')
+    @patch("courses.models.CourseHolidayCalculator")
     def test_course_get_holidays_in_range(self, mock_calculator_class, course):
         """Test: get_holidays_in_range() ruft Service auf"""
         mock_calculator = MagicMock()
@@ -349,7 +322,7 @@ class TestCourseMethods:
         mock_calculator.get_holidays_in_range.assert_called_once()
         assert result == []
 
-    @patch('courses.models.CourseScheduleCalculator')
+    @patch("courses.models.CourseScheduleCalculator")
     def test_course_get_course_dates(self, mock_calc_class, course):
         """Test: get_course_dates() ruft Service auf"""
         mock_calc = MagicMock()
@@ -368,8 +341,8 @@ class TestCourseMethods:
 
         status = course.email_status_display
 
-        assert 'Start: ✓' in status
-        assert 'Abschluss: ✓' in status
+        assert "Start: ✓" in status
+        assert "Abschluss: ✓" in status
 
     def test_course_email_status_display_none_sent(self):
         """Test: email_status_display wenn keine Emails versendet"""
@@ -377,11 +350,12 @@ class TestCourseMethods:
 
         status = course.email_status_display
 
-        assert 'Start: ✗' in status
-        assert 'Abschluss: ✗' in status
+        assert "Start: ✗" in status
+        assert "Abschluss: ✗" in status
 
 
 # ==================== COURSE PARTICIPANTS TESTS ====================
+
 
 class TestCourseParticipants:
     """Tests für Course Participants"""
@@ -437,10 +411,11 @@ class TestCourseParticipants:
 
 # ==================== COURSE SIGNALS & CELERY TESTS ====================
 
+
 class TestCourseSignalsAndCelery:
     """Tests für Course Signals und Celery"""
 
-    @patch('courses.models.CeleryTaskManager')
+    @patch("courses.models.CeleryTaskManager")
     def test_course_save_calls_celery_task_manager(self, mock_task_manager_class):
         """Test: Course.save() ruft CeleryTaskManager auf"""
         mock_task_manager = MagicMock()
@@ -452,7 +427,7 @@ class TestCourseSignalsAndCelery:
         mock_task_manager_class.assert_called()
         mock_task_manager.manage_course_start_email_task.assert_called()
 
-    @patch('courses.models.CeleryTaskManager')
+    @patch("courses.models.CeleryTaskManager")
     def test_course_delete_calls_celery_task_manager(self, mock_task_manager_class):
         """Test: Course.delete() ruft CeleryTaskManager auf"""
         mock_task_manager = MagicMock()
@@ -466,6 +441,7 @@ class TestCourseSignalsAndCelery:
 
 
 # ==================== COURSE INTEGRATION TESTS ====================
+
 
 class TestCourseIntegration:
     """Integration Tests für Course"""
@@ -496,10 +472,7 @@ class TestCourseIntegration:
         """Test: Course Verfallsdatum Workflow"""
         # 1. Course mit Verfallsdatum erstellen
         past_date = date.today() - timedelta(days=5)
-        course = CourseFactory(
-            end_date=past_date,
-            is_active=True
-        )
+        course = CourseFactory(end_date=past_date, is_active=True)
 
         # 2. Course sollte noch aktiv sein
         assert course.is_active is True

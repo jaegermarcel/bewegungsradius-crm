@@ -7,13 +7,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('customers', '0004_customer_archived_at_customer_is_active'),
+        ("customers", "0004_customer_archived_at_customer_is_active"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customer',
-            name='coordinates',
-            field=django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=4326, verbose_name='Koordinaten'),
+            model_name="customer",
+            name="coordinates",
+            field=django.contrib.gis.db.models.fields.PointField(
+                blank=True, null=True, srid=4326, verbose_name="Koordinaten"
+            ),
         ),
     ]

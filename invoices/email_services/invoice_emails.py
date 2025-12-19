@@ -1,8 +1,10 @@
+import logging
 
-from bewegungsradius.core.email import BaseEmailService, EmailPayload, EmailTemplateConfig
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
-import logging
+
+from bewegungsradius.core.email import (BaseEmailService, EmailPayload,
+                                        EmailTemplateConfig)
 
 logger = logging.getLogger(__name__)
 
@@ -10,24 +12,21 @@ logger = logging.getLogger(__name__)
 class InvoiceEmailService(BaseEmailService):
     """Service für Invoice Email Versand mit PDF-Attachment"""
 
-    TEMPLATE_PATH = 'email/notifications/invoice_email.html'
+    TEMPLATE_PATH = "email/notifications/invoice_email.html"
 
     def get_template_config(self, invoice, **kwargs) -> EmailTemplateConfig:
         """Erstellt Template Config für Invoice Email"""
         customer = invoice.customer
 
         context = {
-            'customer': customer,
-            'invoice': invoice,
-            'company': self.company_info,
+            "customer": customer,
+            "invoice": invoice,
+            "company": self.company_info,
         }
         return EmailTemplateConfig(self.TEMPLATE_PATH, context)
 
     def build_email_payload(
-            self,
-            invoice,
-            html_content: str = None,
-            **kwargs
+        self, invoice, html_content: str = None, **kwargs
     ) -> EmailPayload:
         """Erstellt Email Payload für Invoice"""
         customer = invoice.customer
@@ -37,7 +36,7 @@ class InvoiceEmailService(BaseEmailService):
             subject=subject,
             html_content=html_content or "",
             recipient_email=customer.email,
-            from_email=self.company_info.email if self.company_info else None
+            from_email=self.company_info.email if self.company_info else None,
         )
 
     def send_invoice_email(self, invoice) -> dict:
@@ -55,12 +54,14 @@ class InvoiceEmailService(BaseEmailService):
         if not customer.email:
             logger.warning(f"Kunde {customer.id} hat keine Email-Adresse")
             return {
-                'sent': 0,
-                'errors': 1,
-                'failed': [{
-                    'recipient': customer.get_full_name(),
-                    'error': 'Kunde hat keine Email-Adresse'
-                }]
+                "sent": 0,
+                "errors": 1,
+                "failed": [
+                    {
+                        "recipient": customer.get_full_name(),
+                        "error": "Kunde hat keine Email-Adresse",
+                    }
+                ],
             }
 
         try:
@@ -87,31 +88,23 @@ class InvoiceEmailService(BaseEmailService):
             # Email mit Attachment versenden
             self._send_email_with_attachment(payload, pdf_bytes, invoice.invoice_number)
 
-            logger.info(f"✓ Invoice Email an {customer.email} versendet: {payload.subject}")
+            logger.info(
+                f"✓ Invoice Email an {customer.email} versendet: {payload.subject}"
+            )
 
-            return {
-                'sent': 1,
-                'errors': 0,
-                'invoice_number': invoice.invoice_number
-            }
+            return {"sent": 1, "errors": 0, "invoice_number": invoice.invoice_number}
 
         except Exception as e:
             logger.error(f"❌ Email Versand fehlgeschlagen: {e}", exc_info=True)
 
             return {
-                'sent': 0,
-                'errors': 1,
-                'failed': [{
-                    'recipient': customer.get_full_name(),
-                    'error': str(e)
-                }]
+                "sent": 0,
+                "errors": 1,
+                "failed": [{"recipient": customer.get_full_name(), "error": str(e)}],
             }
 
     def _send_email_with_attachment(
-            self,
-            payload: EmailPayload,
-            pdf_bytes: bytes = None,
-            invoice_number: str = None
+        self, payload: EmailPayload, pdf_bytes: bytes = None, invoice_number: str = None
     ):
         """
         Versendet Email mit optionalem PDF-Attachment
@@ -128,7 +121,7 @@ class InvoiceEmailService(BaseEmailService):
                 subject=payload.subject,
                 body=plain_message,
                 from_email=payload.from_email,
-                to=[payload.recipient_email]
+                to=[payload.recipient_email],
             )
 
             # HTML-Version anhängen
@@ -142,7 +135,9 @@ class InvoiceEmailService(BaseEmailService):
 
             # Versenden
             email.send(fail_silently=False)
-            logger.info(f"✓ Email mit Attachment versendet an {payload.recipient_email}")
+            logger.info(
+                f"✓ Email mit Attachment versendet an {payload.recipient_email}"
+            )
 
         except Exception as e:
             logger.error(f"❌ Email mit Attachment fehlgeschlagen: {e}", exc_info=True)
@@ -158,27 +153,24 @@ class InvoiceEmailService(BaseEmailService):
         Returns:
             dict mit sent, errors, failed
         """
-        result = {
-            'sent': 0,
-            'errors': 0,
-            'failed': []
-        }
+        result = {"sent": 0, "errors": 0, "failed": []}
 
         for invoice in invoices:
             try:
                 invoice_result = self.send_invoice_email(invoice)
-                result['sent'] += invoice_result.get('sent', 0)
-                result['errors'] += invoice_result.get('errors', 0)
+                result["sent"] += invoice_result.get("sent", 0)
+                result["errors"] += invoice_result.get("errors", 0)
 
-                if invoice_result.get('failed'):
-                    result['failed'].extend(invoice_result['failed'])
+                if invoice_result.get("failed"):
+                    result["failed"].extend(invoice_result["failed"])
 
             except Exception as e:
-                logger.error(f"❌ Fehler beim Versand für Rechnung {invoice.invoice_number}: {e}")
-                result['errors'] += 1
-                result['failed'].append({
-                    'invoice': invoice.invoice_number,
-                    'error': str(e)
-                })
+                logger.error(
+                    f"❌ Fehler beim Versand für Rechnung {invoice.invoice_number}: {e}"
+                )
+                result["errors"] += 1
+                result["failed"].append(
+                    {"invoice": invoice.invoice_number, "error": str(e)}
+                )
 
         return result

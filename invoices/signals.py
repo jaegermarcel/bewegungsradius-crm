@@ -1,24 +1,23 @@
-
-
 import logging
 from datetime import date
 from typing import Optional
 
-from django.db.models.signals import m2m_changed, pre_save, post_save
+from django.db.models.signals import m2m_changed, post_save, pre_save
 from django.dispatch import receiver
 from django.utils import timezone
 
-from customers.models import Customer
 from courses.models import Course
+from customers.models import Customer
+
 from .models import Invoice
 
 # ✅ KORREKT: Relativer Import oder try-except
 try:
-    from .pdf_service import PdfServiceFactory, PdfGenerationError
+    from .pdf_service import PdfGenerationError, PdfServiceFactory
 except ImportError:
     # Falls in separatem Modul
     try:
-        from pdf_service import PdfServiceFactory, PdfGenerationError
+        from pdf_service import PdfGenerationError, PdfServiceFactory
     except ImportError:
         # Fallback wenn Module nicht vorhanden
         PdfServiceFactory = None
@@ -29,22 +28,27 @@ logger = logging.getLogger(__name__)
 
 # ==================== Exception Classes ====================
 
+
 class InvoiceSignalError(Exception):
     """Fehler bei Invoice Signal-Handling"""
+
     pass
 
 
 class InvoiceCreationError(InvoiceSignalError):
     """Fehler beim Erstellen einer Rechnung"""
+
     pass
 
 
 class InvoiceCancellationError(InvoiceSignalError):
     """Fehler beim Stornieren einer Rechnung"""
+
     pass
 
 
 # ==================== Invoice Creation Service ====================
+
 
 class InvoiceCreator:
     """Erstellt automatisch Rechnungen für Teilnehmer"""
@@ -53,10 +57,7 @@ class InvoiceCreator:
         self.logger = logger
 
     def create_for_participant(
-            self,
-            customer: Customer,
-            course: Course,
-            course_type: str = 'in-person'
+        self, customer: Customer, course: Course, course_type: str = "in-person"
     ) -> Optional[Invoice]:
         """
         Erstellt Rechnung für Teilnehmer
@@ -113,16 +114,10 @@ class InvoiceCreator:
 
     def _invoice_exists(self, customer: Customer, course: Course) -> bool:
         """Prüft ob Invoice bereits existiert"""
-        return Invoice.objects.filter(
-            customer=customer,
-            course=course
-        ).exists()
+        return Invoice.objects.filter(customer=customer, course=course).exists()
 
     def _create_invoice(
-            self,
-            customer: Customer,
-            course: Course,
-            course_type: str
+        self, customer: Customer, course: Course, course_type: str
     ) -> Invoice:
         """Erstellt neue Invoice"""
         invoice = Invoice.objects.create(
@@ -132,9 +127,9 @@ class InvoiceCreator:
             issue_date=date.today(),
             is_prevention_certified=course.is_zpp_certified,
             zpp_prevention_id=(
-                course.zpp_prevention_id if course.is_zpp_certified else ''
+                course.zpp_prevention_id if course.is_zpp_certified else ""
             ),
-            notes=self._generate_notes(course, course_type)
+            notes=self._generate_notes(course, course_type),
         )
 
         return invoice
@@ -142,11 +137,12 @@ class InvoiceCreator:
     @staticmethod
     def _generate_notes(course: Course, course_type: str) -> str:
         """Generiert Notizen für Invoice"""
-        type_label = 'Präsenz' if course_type == 'in-person' else 'Online'
+        type_label = "Präsenz" if course_type == "in-person" else "Online"
         return f"Rechnung für Kurs: {course.title} ({type_label})"
 
 
 # ==================== Invoice Cancellation Service ====================
+
 
 class InvoiceCancellationHandler:
     """Handhabt Stornierung von Rechnungen"""
@@ -177,9 +173,7 @@ class InvoiceCancellationHandler:
             # Schritt 4: Generiere Storno-PDF
             self._generate_cancellation_pdf(invoice)
 
-            self.logger.info(
-                f"Stornierung abgeschlossen: {invoice.invoice_number}"
-            )
+            self.logger.info(f"Stornierung abgeschlossen: {invoice.invoice_number}")
 
         except Exception as e:
             self.logger.error(f"Fehler bei Stornierung: {e}")
@@ -234,9 +228,7 @@ class InvoiceCancellationHandler:
             discount_code.used_at = None
             discount_code.save()
 
-            self.logger.info(
-                f"Rabattcode freigegeben: {discount_code.code}"
-            )
+            self.logger.info(f"Rabattcode freigegeben: {discount_code.code}")
 
         except Exception as e:
             self.logger.error(f"Fehler beim Rabattcode freigeben: {e}")
@@ -245,7 +237,9 @@ class InvoiceCancellationHandler:
     def _generate_cancellation_pdf(self, invoice: Invoice) -> None:
         """Generiert Storno-PDF"""
         if not PdfServiceFactory:
-            self.logger.warning("PdfServiceFactory nicht verfügbar, überspringe PDF-Generierung")
+            self.logger.warning(
+                "PdfServiceFactory nicht verfügbar, überspringe PDF-Generierung"
+            )
             return
 
         try:
@@ -263,10 +257,11 @@ class InvoiceCancellationHandler:
 
 # ==================== Participant Tracker ====================
 
+
 class ParticipantChangeTracker:
     """Trackt Änderungen an Teilnehmerlisten"""
 
-    VALID_ACTIONS = ['post_add', 'post_remove', 'post_clear']
+    VALID_ACTIONS = ["post_add", "post_remove", "post_clear"]
 
     def __init__(self):
         self.logger = logger
@@ -277,7 +272,7 @@ class ParticipantChangeTracker:
 
     def get_affected_customer_ids(self, pk_set, action: str) -> set:
         """Gibt betroffene Customer-IDs zurück"""
-        if action == 'post_add':
+        if action == "post_add":
             return pk_set
 
         # post_remove und post_clear werden nicht behandelt
@@ -285,6 +280,7 @@ class ParticipantChangeTracker:
 
 
 # ==================== Signal Handlers ====================
+
 
 @receiver(m2m_changed, sender=Course.participants_inperson.through)
 def handle_inperson_participants_changed(sender, instance, action, pk_set, **kwargs):
@@ -306,9 +302,7 @@ def handle_inperson_participants_changed(sender, instance, action, pk_set, **kwa
             try:
                 customer = Customer.objects.get(pk=customer_id)
                 creator.create_for_participant(
-                    customer=customer,
-                    course=instance,
-                    course_type='in-person'
+                    customer=customer, course=instance, course_type="in-person"
                 )
 
             except Customer.DoesNotExist:
@@ -343,9 +337,7 @@ def handle_online_participants_changed(sender, instance, action, pk_set, **kwarg
             try:
                 customer = Customer.objects.get(pk=customer_id)
                 creator.create_for_participant(
-                    customer=customer,
-                    course=instance,
-                    course_type='online'
+                    customer=customer, course=instance, course_type="online"
                 )
 
             except Customer.DoesNotExist:
@@ -372,8 +364,7 @@ def handle_invoice_status_change(sender, instance, **kwargs):
 
         # Prüfe auf Statuswechsel zu 'cancelled'
         is_being_cancelled = (
-                old_invoice.status != 'cancelled' and
-                instance.status == 'cancelled'
+            old_invoice.status != "cancelled" and instance.status == "cancelled"
         )
 
         if is_being_cancelled:
@@ -399,7 +390,7 @@ def handle_invoice_cancellation_complete(sender, instance, created, **kwargs):
             return
 
         # Prüfe ob gerade storniert wurde
-        if instance.status != 'cancelled':
+        if instance.status != "cancelled":
             return
 
         # Nur einmal verarbeiten

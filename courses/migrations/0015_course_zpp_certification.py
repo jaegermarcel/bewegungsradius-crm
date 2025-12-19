@@ -7,14 +7,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0014_remove_course_course_time_course_end_time_and_more'),
-        ('offers', '0009_alter_offer_title'),
+        ("courses", "0014_remove_course_course_time_course_end_time_and_more"),
+        ("offers", "0009_alter_offer_title"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='course',
-            name='zpp_certification',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='courses', to='offers.zppcertification', verbose_name='ZPP-Zertifizierung'),
+            model_name="course",
+            name="zpp_certification",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="courses",
+                to="offers.zppcertification",
+                verbose_name="ZPP-Zertifizierung",
+            ),
         ),
     ]

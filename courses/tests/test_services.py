@@ -10,9 +10,10 @@ courses/tests/test_services.py - Tests für Course Services (UPDATED für neue C
 ✅ Integration Tests
 """
 
+from datetime import date, datetime, time, timedelta
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
-from datetime import date, time, timedelta, datetime
-from unittest.mock import patch, MagicMock, Mock
 from django.utils import timezone as tz
 
 pytestmark = pytest.mark.django_db
@@ -20,22 +21,14 @@ pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from courses.services import (
-    LocationGeocoder,
-    CourseHolidayCalculator,
-    CourseScheduleCalculator,
-    CeleryTaskManager,
-    CourseStatusChecker,
-    CourseParticipantCounter,
-)
-from tests.factories import (
-    CourseFactory,
-    LocationFactory,
-    CustomerFactory,
-)
-
+from courses.services import (CeleryTaskManager, CourseHolidayCalculator,
+                              CourseParticipantCounter,
+                              CourseScheduleCalculator, CourseStatusChecker,
+                              LocationGeocoder)
+from tests.factories import CourseFactory, CustomerFactory, LocationFactory
 
 # ==================== LOCATION GEOCODER TESTS ====================
+
 
 class TestLocationGeocoder:
     """Tests für LocationGeocoder Service"""
@@ -47,7 +40,7 @@ class TestLocationGeocoder:
         assert geocoder.TIMEOUT == 10
         assert geocoder.DELAY == 1
 
-    @patch('courses.services.Nominatim')
+    @patch("courses.services.Nominatim")
     def test_geocode_with_valid_address(self, mock_nominatim_class):
         """Test: Geocoding mit gültiger Adresse"""
         mock_geolocator = MagicMock()
@@ -63,9 +56,9 @@ class TestLocationGeocoder:
 
         assert result is not None
         assert result.x == 13.405  # longitude
-        assert result.y == 52.52   # latitude
+        assert result.y == 52.52  # latitude
 
-    @patch('courses.services.Nominatim')
+    @patch("courses.services.Nominatim")
     def test_geocode_with_empty_address(self, mock_nominatim_class):
         """Test: Geocoding mit leerer Adresse"""
         geocoder = LocationGeocoder()
@@ -73,7 +66,7 @@ class TestLocationGeocoder:
 
         assert result is None
 
-    @patch('courses.services.Nominatim')
+    @patch("courses.services.Nominatim")
     def test_geocode_with_none_address(self, mock_nominatim_class):
         """Test: Geocoding mit None Adresse"""
         geocoder = LocationGeocoder()
@@ -81,7 +74,7 @@ class TestLocationGeocoder:
 
         assert result is None
 
-    @patch('courses.services.Nominatim')
+    @patch("courses.services.Nominatim")
     def test_geocode_timeout_exception(self, mock_nominatim_class):
         """Test: Geocoding mit Timeout Exception"""
         from geopy.exc import GeocoderTimedOut
@@ -95,7 +88,7 @@ class TestLocationGeocoder:
 
         assert result is None
 
-    @patch('courses.services.Nominatim')
+    @patch("courses.services.Nominatim")
     def test_geocode_service_error(self, mock_nominatim_class):
         """Test: Geocoding mit Service Error"""
         from geopy.exc import GeocoderServiceError
@@ -109,7 +102,7 @@ class TestLocationGeocoder:
 
         assert result is None
 
-    @patch('courses.services.Nominatim')
+    @patch("courses.services.Nominatim")
     def test_geocode_location_not_found(self, mock_nominatim_class):
         """Test: Geocoding wenn Ort nicht gefunden"""
         mock_geolocator = MagicMock()
@@ -123,6 +116,7 @@ class TestLocationGeocoder:
 
 
 # ==================== COURSE HOLIDAY CALCULATOR TESTS ====================
+
 
 class TestCourseHolidayCalculator:
     """Tests für CourseHolidayCalculator Service"""
@@ -192,12 +186,12 @@ class TestCourseHolidayCalculator:
         warnings = calculator.check_holidays_on_course_day(start, end, weekday)
 
         # Sollte Weihnachtstag enthalten
-        assert any('25.12' in str(w) or 'Weihnacht' in str(w) for w in warnings)
+        assert any("25.12" in str(w) or "Weihnacht" in str(w) for w in warnings)
 
     def test_check_holidays_on_course_day_no_match(self, calculator):
         """Test: check_holidays_on_course_day() wenn keine Feiertage auf Tag fallen"""
         start = date(2025, 1, 6)  # Nach Weihnachten
-        end = date(2025, 2, 28)   # Vor Ostern
+        end = date(2025, 2, 28)  # Vor Ostern
         weekday = 2  # Mittwoch
 
         warnings = calculator.check_holidays_on_course_day(start, end, weekday)
@@ -207,6 +201,7 @@ class TestCourseHolidayCalculator:
 
 
 # ==================== COURSE SCHEDULE CALCULATOR TESTS ====================
+
 
 class TestCourseScheduleCalculator:
     """Tests für CourseScheduleCalculator Service"""
@@ -224,7 +219,7 @@ class TestCourseScheduleCalculator:
     def test_get_course_dates(self, calculator):
         """Test: get_course_dates() gibt Kurstermine zurück"""
         start = date(2025, 11, 24)  # Montag
-        end = date(2025, 12, 8)     # Montag nach 2 Wochen
+        end = date(2025, 12, 8)  # Montag nach 2 Wochen
 
         dates = calculator.get_course_dates(start, end, 0)  # Montag
 
@@ -281,6 +276,7 @@ class TestCourseScheduleCalculator:
 
 # ==================== CELERY TASK MANAGER TESTS (UPDATED) ====================
 
+
 class TestCeleryTaskManager:
     """Tests für CeleryTaskManager Service - UPDATED für course object"""
 
@@ -302,16 +298,16 @@ class TestCeleryTaskManager:
         course.end_date = course.start_date + timedelta(weeks=8)
         course.start_time = time(9, 0)
         course.end_time = time(10, 0)
-        course.location.name = 'Studio A'
+        course.location.name = "Studio A"
         course.save()
 
-        name = manager.get_task_name(course, task_type='start')
+        name = manager.get_task_name(course, task_type="start")
 
         # Format: "Kursstart Email - Kurstitel Zeitraum, Uhrzeit, Ort"
-        assert 'Kursstart Email' in name
+        assert "Kursstart Email" in name
         assert course.offer.title in name
-        assert 'Studio A' in name
-        assert '09:00-10:00' in name
+        assert "Studio A" in name
+        assert "09:00-10:00" in name
 
     def test_get_task_name_completion_format(self, manager, course):
         """Test: get_task_name() für Completion Task hat aussagekräftiges Format"""
@@ -320,15 +316,15 @@ class TestCeleryTaskManager:
         course.end_date = course.start_date + timedelta(weeks=8)
         course.start_time = time(9, 0)
         course.end_time = time(10, 0)
-        course.location.name = 'Studio A'
+        course.location.name = "Studio A"
         course.save()
 
-        name = manager.get_task_name(course, task_type='completion')
+        name = manager.get_task_name(course, task_type="completion")
 
         # Format: "Kurs-Abschluss Email - ..."
-        assert 'Kurs-Abschluss Email' in name
+        assert "Kurs-Abschluss Email" in name
         assert course.offer.title in name
-        assert 'Studio A' in name
+        assert "Studio A" in name
 
     def test_get_task_name_includes_dates(self, manager, course):
         """Test: get_task_name() enthält Zeitraum"""
@@ -339,10 +335,10 @@ class TestCeleryTaskManager:
         course.end_time = time(10, 0)
         course.save()
 
-        name = manager.get_task_name(course, task_type='start')
+        name = manager.get_task_name(course, task_type="start")
 
-        start_str = course.start_date.strftime('%d.%m')
-        end_str = course.end_date.strftime('%d.%m')
+        start_str = course.start_date.strftime("%d.%m")
+        end_str = course.end_date.strftime("%d.%m")
 
         assert start_str in name
         assert end_str in name
@@ -357,9 +353,9 @@ class TestCeleryTaskManager:
         course.end_time = time(19, 30)
         course.save()
 
-        name = manager.get_task_name(course, task_type='start')
+        name = manager.get_task_name(course, task_type="start")
 
-        assert 'Online' in name
+        assert "Online" in name
 
     def test_get_task_name_max_length(self, manager, course):
         """Test: get_task_name() wird auf 200 Zeichen gekürzt"""
@@ -370,7 +366,7 @@ class TestCeleryTaskManager:
         course.end_time = time(10, 0)
         course.save()
 
-        name = manager.get_task_name(course, task_type='start')
+        name = manager.get_task_name(course, task_type="start")
 
         assert len(name) <= 200
 
@@ -401,7 +397,9 @@ class TestCeleryTaskManager:
         future_end_date = tz.now().date() + timedelta(days=10)
         end_time = time(18, 30)
 
-        send_datetime = manager.calculate_completion_email_send_datetime(future_end_date, end_time)
+        send_datetime = manager.calculate_completion_email_send_datetime(
+            future_end_date, end_time
+        )
 
         assert send_datetime.date() == future_end_date
         assert send_datetime.hour == 18
@@ -412,14 +410,18 @@ class TestCeleryTaskManager:
         # ✅ KORRIGIERT: Nutze zukünftiges Datum statt Hard-codiert
         future_end_date = tz.now().date() + timedelta(days=10)
 
-        send_datetime = manager.calculate_completion_email_send_datetime(future_end_date, None)
+        send_datetime = manager.calculate_completion_email_send_datetime(
+            future_end_date, None
+        )
 
         # Sollte 18:00 Fallback nutzen
         assert send_datetime.date() == future_end_date
         assert send_datetime.hour == 18
 
-    @patch('courses.services.PeriodicTask')
-    def test_manage_course_start_email_task_already_sent(self, mock_periodic_task, manager, course):
+    @patch("courses.services.PeriodicTask")
+    def test_manage_course_start_email_task_already_sent(
+        self, mock_periodic_task, manager, course
+    ):
         """Test: manage_course_start_email_task() wenn Email bereits versendet"""
         course.start_date = date.today() + timedelta(days=10)
         course.start_email_sent = True
@@ -431,8 +433,10 @@ class TestCeleryTaskManager:
         # Sollte keine Task erstellen wenn Email bereits versendet
         mock_periodic_task.objects.filter.assert_called()
 
-    @patch('courses.services.PeriodicTask')
-    def test_manage_course_completion_email_task_already_sent(self, mock_periodic_task, manager, course):
+    @patch("courses.services.PeriodicTask")
+    def test_manage_course_completion_email_task_already_sent(
+        self, mock_periodic_task, manager, course
+    ):
         """Test: manage_course_completion_email_task() wenn Email bereits versendet"""
         course.end_date = date.today() + timedelta(days=70)
         course.completion_email_sent = True
@@ -453,13 +457,14 @@ class TestCeleryTaskManager:
         course.end_time = time(10, 0)
         course.save()
 
-        name1 = manager.get_task_name(course, task_type='start')
-        name2 = manager.get_task_name(course, task_type='start')
+        name1 = manager.get_task_name(course, task_type="start")
+        name2 = manager.get_task_name(course, task_type="start")
 
         assert name1 == name2
 
 
 # ==================== COURSE STATUS CHECKER TESTS ====================
+
 
 class TestCourseStatusChecker:
     """Tests für CourseStatusChecker Service"""
@@ -537,6 +542,7 @@ class TestCourseStatusChecker:
 
 
 # ==================== COURSE PARTICIPANT COUNTER TESTS ====================
+
 
 class TestCourseParticipantCounter:
     """Tests für CourseParticipantCounter Service"""
@@ -643,6 +649,7 @@ class TestCourseParticipantCounter:
 
 # ==================== INTEGRATION TESTS ====================
 
+
 class TestCourseServicesIntegration:
     """Integration Tests für Course Services"""
 
@@ -651,7 +658,7 @@ class TestCourseServicesIntegration:
         calc = CourseScheduleCalculator()
 
         start = date(2025, 11, 24)  # Montag
-        end = date(2025, 12, 22)    # Montag nach 5 Wochen
+        end = date(2025, 12, 22)  # Montag nach 5 Wochen
 
         dates = calc.get_course_dates(start, end, 0)
 
@@ -676,7 +683,9 @@ class TestCourseServicesIntegration:
     def test_course_participant_and_status_integration(self):
         """Test: Teilnehmer und Status zusammen"""
         location = LocationFactory(max_participants=5)
-        course = CourseFactory(location=location, start_date=date.today() + timedelta(days=5))
+        course = CourseFactory(
+            location=location, start_date=date.today() + timedelta(days=5)
+        )
 
         # Teilnehmer hinzufügen
         customers = CustomerFactory.create_batch(4)
@@ -696,10 +705,7 @@ class TestCourseServicesIntegration:
         end = date.today() + timedelta(days=15)
 
         course = CourseFactory(
-            location=location,
-            start_date=start,
-            end_date=end,
-            is_active=True
+            location=location, start_date=start, end_date=end, is_active=True
         )
 
         customers = CustomerFactory.create_batch(5)

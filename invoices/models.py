@@ -1,11 +1,13 @@
-from django.db import models
+from datetime import date, datetime, timedelta
 from decimal import Decimal
-from datetime import timedelta, date, datetime
-from customers.models import Customer
-from courses.models import Course
 
+from django.db import models
+
+from courses.models import Course
+from customers.models import Customer
 
 # ==================== Service-Klassen ====================
+
 
 class InvoiceNumberGenerator:
     """Generiert eindeutige Rechnungsnummern"""
@@ -14,14 +16,16 @@ class InvoiceNumberGenerator:
     def generate() -> str:
         """Generiert eine Rechnungsnummer im Format YYYY-XXX"""
         year = datetime.now().year
-        last_invoice = Invoice.objects.filter(
-            invoice_number__startswith=f"{year}-"
-        ).order_by('-invoice_number').first()
+        last_invoice = (
+            Invoice.objects.filter(invoice_number__startswith=f"{year}-")
+            .order_by("-invoice_number")
+            .first()
+        )
 
         new_number = 1
         if last_invoice:
             try:
-                last_number = int(last_invoice.invoice_number.split('-')[-1])
+                last_number = int(last_invoice.invoice_number.split("-")[-1])
                 new_number = last_number + 1
             except ValueError:
                 pass
@@ -39,7 +43,7 @@ class CourseIdGenerator:
         import string
 
         prefix = course_type[:2].upper()
-        random_part = ''.join(random.choices(string.ascii_uppercase, k=6))
+        random_part = "".join(random.choices(string.ascii_uppercase, k=6))
         return f"KU-{prefix}-{random_part}"
 
 
@@ -54,18 +58,18 @@ class TaxCalculator:
     def calculate_tax_amount(self) -> Decimal:
         """Berechnet den MwSt-Betrag"""
         if self.amount is None or self.is_tax_exempt:
-            return Decimal('0.00')
+            return Decimal("0.00")
 
-        tax = (self.amount * self.tax_rate / Decimal('100'))
-        return tax.quantize(Decimal('0.01'))
+        tax = self.amount * self.tax_rate / Decimal("100")
+        return tax.quantize(Decimal("0.01"))
 
     def calculate_total(self) -> Decimal:
         """Berechnet den Gesamtbetrag inkl. MwSt"""
         if self.amount is None:
-            return Decimal('0.00')
+            return Decimal("0.00")
 
         total = self.amount + self.calculate_tax_amount()
-        return total.quantize(Decimal('0.01'))
+        return total.quantize(Decimal("0.01"))
 
 
 class DiscountApplier:
@@ -75,9 +79,9 @@ class DiscountApplier:
         self.amount = amount
         self.discount_code = discount_code
         self.original_amount = None
-        self.discount_amount = Decimal('0.00')
+        self.discount_amount = Decimal("0.00")
 
-    def apply(self) -> 'DiscountApplier':
+    def apply(self) -> "DiscountApplier":
         """Wendet Rabattcode an und speichert Original"""
         if self.discount_code and not self.original_amount:
             self.original_amount = self.amount
@@ -170,61 +174,68 @@ class InvoiceInitializer:
                 # Für 10er-Karten: course_id setzen
                 if not self.invoice.course_id_custom:
                     generator = CourseIdGenerator()
-                    self.invoice.course_id_custom = generator.generate('ticket')
+                    self.invoice.course_id_custom = generator.generate("ticket")
 
     def _set_dates(self) -> None:
         self.invoice.issue_date = InvoiceDateManager.get_issue_date(
             self.invoice.issue_date
         )
         self.invoice.due_date = InvoiceDateManager.get_due_date(
-            self.invoice.due_date,
-            self.invoice.issue_date
+            self.invoice.due_date, self.invoice.issue_date
         )
 
 
 # ==================== Django Model ====================
 
+
 class Invoice(models.Model):
     STATUS_CHOICES = [
-        ('draft', 'Entwurf'),
-        ('sent', 'Versendet'),
-        ('paid', 'Bezahlt'),
-        ('overdue', 'Überfällig'),
-        ('cancelled', 'Storniert'),
+        ("draft", "Entwurf"),
+        ("sent", "Versendet"),
+        ("paid", "Bezahlt"),
+        ("overdue", "Überfällig"),
+        ("cancelled", "Storniert"),
     ]
 
-    invoice_number = models.CharField(max_length=50, unique=True, verbose_name="Rechnungsnummer")
-    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='invoices', verbose_name="Kunde")
+    invoice_number = models.CharField(
+        max_length=50, unique=True, verbose_name="Rechnungsnummer"
+    )
+    customer = models.ForeignKey(
+        Customer,
+        on_delete=models.PROTECT,
+        related_name="invoices",
+        verbose_name="Kunde",
+    )
 
     # ✅ GEÄNDERT: Course ist jetzt optional
     course = models.ForeignKey(
         Course,
         on_delete=models.PROTECT,
-        related_name='invoices',
+        related_name="invoices",
         verbose_name="Kurs",
         null=True,
         blank=True,
-        help_text="Kurs (für normale Kurse)"
+        help_text="Kurs (für normale Kurse)",
     )
 
     # ✅ NEU: Offer (für 10er-Karten etc.)
     offer = models.ForeignKey(
-        'offers.Offer',
+        "offers.Offer",
         on_delete=models.PROTECT,
-        related_name='invoices',
+        related_name="invoices",
         verbose_name="Angebot",
         null=True,
         blank=True,
-        help_text="Angebot (für 10er-Karten, Workshops, etc.)"
+        help_text="Angebot (für 10er-Karten, Workshops, etc.)",
     )
 
     discount_code = models.ForeignKey(
-        'customers.CustomerDiscountCode',
+        "customers.CustomerDiscountCode",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='invoices',
-        verbose_name="Rabattcode"
+        related_name="invoices",
+        verbose_name="Rabattcode",
     )
 
     issue_date = models.DateField(verbose_name="Rechnungsdatum")
@@ -232,38 +243,53 @@ class Invoice(models.Model):
 
     course_units = models.IntegerField(verbose_name="Anzahl Kurseinheiten")
     course_duration = models.IntegerField(
-        null=True,
-        blank=True,
-        verbose_name="Dauer pro Einheit (Minuten)"
+        null=True, blank=True, verbose_name="Dauer pro Einheit (Minuten)"
     )
-    course_id_custom = models.CharField(max_length=50, blank=True, verbose_name="Kurs-ID")
+    course_id_custom = models.CharField(
+        max_length=50, blank=True, verbose_name="Kurs-ID"
+    )
 
-    amount = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Betrag (Netto)")
+    amount = models.DecimalField(
+        max_digits=8, decimal_places=2, verbose_name="Betrag (Netto)"
+    )
 
     original_amount = models.DecimalField(
         max_digits=8,
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name="Originalbetrag (vor Rabatt)"
+        verbose_name="Originalbetrag (vor Rabatt)",
     )
     discount_amount = models.DecimalField(
         max_digits=8,
         decimal_places=2,
-        default=Decimal('0.00'),
-        verbose_name="Rabattbetrag"
+        default=Decimal("0.00"),
+        verbose_name="Rabattbetrag",
     )
 
-    tax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, verbose_name="MwSt. (%)")
-    is_tax_exempt = models.BooleanField(default=True, verbose_name="Kleinunternehmerregelung (§19 UStG)")
+    tax_rate = models.DecimalField(
+        max_digits=5, decimal_places=2, default=0.00, verbose_name="MwSt. (%)"
+    )
+    is_tax_exempt = models.BooleanField(
+        default=True, verbose_name="Kleinunternehmerregelung (§19 UStG)"
+    )
 
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft', verbose_name="Status")
-    cancelled_at = models.DateTimeField(null=True, blank=True, verbose_name="Storniert am")
-    cancelled_invoice_number = models.CharField(max_length=50, blank=True, null=True,
-                                                verbose_name="Storno-Rechnungsnummer")
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default="draft", verbose_name="Status"
+    )
+    cancelled_at = models.DateTimeField(
+        null=True, blank=True, verbose_name="Storniert am"
+    )
+    cancelled_invoice_number = models.CharField(
+        max_length=50, blank=True, null=True, verbose_name="Storno-Rechnungsnummer"
+    )
 
-    is_prevention_certified = models.BooleanField(default=True, verbose_name="Zertifiziert nach § 20 SGB V")
-    zpp_prevention_id = models.CharField(max_length=50, blank=True, verbose_name="ZPP Präventions-ID")
+    is_prevention_certified = models.BooleanField(
+        default=True, verbose_name="Zertifiziert nach § 20 SGB V"
+    )
+    zpp_prevention_id = models.CharField(
+        max_length=50, blank=True, verbose_name="ZPP Präventions-ID"
+    )
 
     notes = models.TextField(blank=True, verbose_name="Notizen")
 
@@ -271,26 +297,26 @@ class Invoice(models.Model):
     email_sent = models.BooleanField(
         default=False,
         verbose_name="Email versendet",
-        help_text="Wurde die Rechnung per Email versendet?"
+        help_text="Wurde die Rechnung per Email versendet?",
     )
     email_sent_at = models.DateTimeField(
         null=True,
         blank=True,
         verbose_name="Email versendet am",
-        help_text="Zeitpunkt des Email-Versands"
+        help_text="Zeitpunkt des Email-Versands",
     )
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Erstellt am")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Aktualisiert am")
 
     class Meta:
-        ordering = ['-issue_date']
+        ordering = ["-issue_date"]
         verbose_name = "Rechnung"
         verbose_name_plural = "Rechnungen"
         constraints = [
             models.CheckConstraint(
                 check=models.Q(course__isnull=False) | models.Q(offer__isnull=False),
-                name='invoice_has_course_or_offer'
+                name="invoice_has_course_or_offer",
             )
         ]
 
@@ -334,7 +360,9 @@ class Invoice(models.Model):
         """Speichert die Rechnung mit automatischen Defaults"""
         # ✅ Validierung: Entweder Course ODER Offer
         if not self.course and not self.offer:
-            raise ValueError("Eine Rechnung muss entweder einen Kurs oder ein Angebot haben!")
+            raise ValueError(
+                "Eine Rechnung muss entweder einen Kurs oder ein Angebot haben!"
+            )
 
             # ✅ SCHRITT 2: Initialisiere (invoice_number, amount, dates etc.)
         initializer = InvoiceInitializer(self)
@@ -351,10 +379,12 @@ class Invoice(models.Model):
             # Die calculate_discount() Methode arbeitet mit beiden Typen:
             # - percentage: amount * (value / 100)
             # - fixed: min(value, amount)
-            self.discount_amount = self.discount_code.calculate_discount(self.original_amount)
+            self.discount_amount = self.discount_code.calculate_discount(
+                self.original_amount
+            )
         else:
             # Kein Code = Kein Rabatt
-            self.discount_amount = Decimal('0.00')
+            self.discount_amount = Decimal("0.00")
 
         # ✅ SCHRITT 5: Berechne amount (original - discount)
         self.amount = self.original_amount - self.discount_amount

@@ -6,18 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('invoices', '0002_companyinfo_invoice_course_duration_and_more'),
+        ("invoices", "0002_companyinfo_invoice_course_duration_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='invoice',
-            name='cancelled_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Storniert am'),
+            model_name="invoice",
+            name="cancelled_at",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="Storniert am"
+            ),
         ),
         migrations.AddField(
-            model_name='invoice',
-            name='cancelled_invoice_number',
-            field=models.CharField(blank=True, max_length=50, null=True, verbose_name='Storno-Rechnungsnummer'),
+            model_name="invoice",
+            name="cancelled_invoice_number",
+            field=models.CharField(
+                blank=True,
+                max_length=50,
+                null=True,
+                verbose_name="Storno-Rechnungsnummer",
+            ),
         ),
     ]

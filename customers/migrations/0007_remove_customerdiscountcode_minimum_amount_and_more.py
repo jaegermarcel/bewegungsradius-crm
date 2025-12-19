@@ -7,22 +7,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('customers', '0006_customerdiscountcode'),
+        ("customers", "0006_customerdiscountcode"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='customerdiscountcode',
-            name='minimum_amount',
+            model_name="customerdiscountcode",
+            name="minimum_amount",
         ),
         migrations.AlterField(
-            model_name='customerdiscountcode',
-            name='valid_from',
-            field=models.DateField(default=django.utils.timezone.now, verbose_name='Gültig von'),
+            model_name="customerdiscountcode",
+            name="valid_from",
+            field=models.DateField(
+                default=django.utils.timezone.now, verbose_name="Gültig von"
+            ),
         ),
         migrations.AlterField(
-            model_name='customerdiscountcode',
-            name='valid_until',
-            field=models.DateField(verbose_name='Gültig bis'),
+            model_name="customerdiscountcode",
+            name="valid_until",
+            field=models.DateField(verbose_name="Gültig bis"),
         ),
     ]

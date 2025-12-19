@@ -7,14 +7,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0013_course_course_time'),
-        ('customers', '0010_remove_customerdiscountcode_email_sent_and_more'),
+        ("courses", "0013_course_course_time"),
+        ("customers", "0010_remove_customerdiscountcode_email_sent_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customerdiscountcode',
-            name='course',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='discount_codes', to='courses.course', verbose_name='Kurs'),
+            model_name="customerdiscountcode",
+            name="course",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="discount_codes",
+                to="courses.course",
+                verbose_name="Kurs",
+            ),
         ),
     ]

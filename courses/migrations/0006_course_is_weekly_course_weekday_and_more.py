@@ -6,23 +6,41 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0005_location_coordinates'),
+        ("courses", "0005_location_coordinates"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='course',
-            name='is_weekly',
-            field=models.BooleanField(default=True, verbose_name='Wöchentlich wiederkehrend'),
+            model_name="course",
+            name="is_weekly",
+            field=models.BooleanField(
+                default=True, verbose_name="Wöchentlich wiederkehrend"
+            ),
         ),
         migrations.AddField(
-            model_name='course',
-            name='weekday',
-            field=models.IntegerField(blank=True, choices=[(0, 'Montag'), (1, 'Dienstag'), (2, 'Mittwoch'), (3, 'Donnerstag'), (4, 'Freitag'), (5, 'Samstag'), (6, 'Sonntag')], editable=False, null=True, verbose_name='Wochentag'),
+            model_name="course",
+            name="weekday",
+            field=models.IntegerField(
+                blank=True,
+                choices=[
+                    (0, "Montag"),
+                    (1, "Dienstag"),
+                    (2, "Mittwoch"),
+                    (3, "Donnerstag"),
+                    (4, "Freitag"),
+                    (5, "Samstag"),
+                    (6, "Sonntag"),
+                ],
+                editable=False,
+                null=True,
+                verbose_name="Wochentag",
+            ),
         ),
         migrations.AlterField(
-            model_name='course',
-            name='end_date',
-            field=models.DateField(blank=True, null=True, verbose_name='Enddatum (ohne Feiertage)'),
+            model_name="course",
+            name="end_date",
+            field=models.DateField(
+                blank=True, null=True, verbose_name="Enddatum (ohne Feiertage)"
+            ),
         ),
     ]

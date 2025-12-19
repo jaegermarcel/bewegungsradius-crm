@@ -7,35 +7,41 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0009_alter_course_course_type'),
-        ('offers', '0004_alter_offer_course_duration_alter_offer_course_units'),
+        ("courses", "0009_alter_course_course_type"),
+        ("offers", "0004_alter_offer_course_duration_alter_offer_course_units"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='course',
-            name='course_type',
+            model_name="course",
+            name="course_type",
         ),
         migrations.RemoveField(
-            model_name='course',
-            name='is_zpp_certified',
+            model_name="course",
+            name="is_zpp_certified",
         ),
         migrations.RemoveField(
-            model_name='course',
-            name='price',
+            model_name="course",
+            name="price",
         ),
         migrations.RemoveField(
-            model_name='course',
-            name='title',
+            model_name="course",
+            name="title",
         ),
         migrations.RemoveField(
-            model_name='course',
-            name='zpp_prevention_id',
+            model_name="course",
+            name="zpp_prevention_id",
         ),
         migrations.AddField(
-            model_name='course',
-            name='offer',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.PROTECT, related_name='courses', to='offers.offer', verbose_name='Angebot'),
+            model_name="course",
+            name="offer",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="courses",
+                to="offers.offer",
+                verbose_name="Angebot",
+            ),
             preserve_default=False,
         ),
     ]

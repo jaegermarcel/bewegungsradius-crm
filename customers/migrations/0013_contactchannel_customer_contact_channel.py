@@ -7,30 +7,54 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('customers', '0012_alter_customerdiscountcode_valid_from'),
+        ("customers", "0012_alter_customerdiscountcode_valid_from"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ContactChannel',
+            name="ContactChannel",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, verbose_name='Name')),
-                ('slug', models.SlugField(unique=True, verbose_name='Slug')),
-                ('description', models.TextField(blank=True, verbose_name='Beschreibung')),
-                ('is_active', models.BooleanField(default=True, verbose_name='Aktiv')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Erstellt am')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Aktualisiert am')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, verbose_name="Name")),
+                ("slug", models.SlugField(unique=True, verbose_name="Slug")),
+                (
+                    "description",
+                    models.TextField(blank=True, verbose_name="Beschreibung"),
+                ),
+                ("is_active", models.BooleanField(default=True, verbose_name="Aktiv")),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="Erstellt am"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="Aktualisiert am"),
+                ),
             ],
             options={
-                'verbose_name': 'Kontaktkanal',
-                'verbose_name_plural': 'Kontaktkanäle',
-                'ordering': ['name'],
+                "verbose_name": "Kontaktkanal",
+                "verbose_name_plural": "Kontaktkanäle",
+                "ordering": ["name"],
             },
         ),
         migrations.AddField(
-            model_name='customer',
-            name='contact_channel',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='customers', to='customers.contactchannel', verbose_name='Kontaktkanal'),
+            model_name="customer",
+            name="contact_channel",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="customers",
+                to="customers.contactchannel",
+                verbose_name="Kontaktkanal",
+            ),
         ),
     ]

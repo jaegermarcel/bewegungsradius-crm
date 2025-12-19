@@ -6,32 +6,51 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('offers', '0002_remove_offer_offer_number'),
+        ("offers", "0002_remove_offer_offer_number"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='offer',
-            name='is_prevention_certified',
+            model_name="offer",
+            name="is_prevention_certified",
         ),
         migrations.AlterField(
-            model_name='offer',
-            name='course_duration',
-            field=models.IntegerField(blank=True, verbose_name='Dauer pro Einheit'),
+            model_name="offer",
+            name="course_duration",
+            field=models.IntegerField(blank=True, verbose_name="Dauer pro Einheit"),
         ),
         migrations.AlterField(
-            model_name='offer',
-            name='course_type',
-            field=models.CharField(choices=[('rueckbildung', 'Rückbildung Präsens'), ('pilates', 'Pilates Präsens'), ('body-workout', 'Body-Workout Präsens'), ('personal-coach', 'Personal Coach'), ('10er-karte', '10er Karte')], max_length=50, verbose_name='Kurstyp'),
+            model_name="offer",
+            name="course_type",
+            field=models.CharField(
+                choices=[
+                    ("rueckbildung", "Rückbildung Präsens"),
+                    ("pilates", "Pilates Präsens"),
+                    ("body-workout", "Body-Workout Präsens"),
+                    ("personal-coach", "Personal Coach"),
+                    ("10er-karte", "10er Karte"),
+                ],
+                max_length=50,
+                verbose_name="Kurstyp",
+            ),
         ),
         migrations.AlterField(
-            model_name='offer',
-            name='course_units',
-            field=models.IntegerField(blank=True, verbose_name='Anzahl Einheiten'),
+            model_name="offer",
+            name="course_units",
+            field=models.IntegerField(blank=True, verbose_name="Anzahl Einheiten"),
         ),
         migrations.AlterField(
-            model_name='offer',
-            name='zpp_prevention_id',
-            field=models.CharField(blank=True, choices=[('KU-BE-ZCURFS', 'Pilates Präsens 2027'), ('KU-BE-XHQ7AR', 'Rückbildung Präsens 2027'), ('KU-BE-SC4KUQ', 'Body-Workout Präsens 2027')], max_length=50, verbose_name='ZPP Präventions-ID'),
+            model_name="offer",
+            name="zpp_prevention_id",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("KU-BE-ZCURFS", "Pilates Präsens 2027"),
+                    ("KU-BE-XHQ7AR", "Rückbildung Präsens 2027"),
+                    ("KU-BE-SC4KUQ", "Body-Workout Präsens 2027"),
+                ],
+                max_length=50,
+                verbose_name="ZPP Präventions-ID",
+            ),
         ),
     ]

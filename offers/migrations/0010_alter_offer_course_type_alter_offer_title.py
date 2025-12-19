@@ -6,18 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('offers', '0009_alter_offer_title'),
+        ("offers", "0009_alter_offer_title"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='offer',
-            name='course_type',
-            field=models.CharField(choices=[('praesenz', 'Präsenz'), ('online', 'Online'), ('hybrid', 'Hybrid')], max_length=50, verbose_name='Kurstyp'),
+            model_name="offer",
+            name="course_type",
+            field=models.CharField(
+                choices=[
+                    ("praesenz", "Präsenz"),
+                    ("online", "Online"),
+                    ("hybrid", "Hybrid"),
+                ],
+                max_length=50,
+                verbose_name="Kurstyp",
+            ),
         ),
         migrations.AlterField(
-            model_name='offer',
-            name='title',
-            field=models.CharField(max_length=200, verbose_name='Titel'),
+            model_name="offer",
+            name="title",
+            field=models.CharField(max_length=200, verbose_name="Titel"),
         ),
     ]

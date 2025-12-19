@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0012_course_is_active'),
+        ("courses", "0012_course_is_active"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='course',
-            name='course_time',
-            field=models.TimeField(blank=True, help_text='Z.B. 10:00 Uhr', null=True, verbose_name='Kurszeit'),
+            model_name="course",
+            name="course_time",
+            field=models.TimeField(
+                blank=True,
+                help_text="Z.B. 10:00 Uhr",
+                null=True,
+                verbose_name="Kurszeit",
+            ),
         ),
     ]

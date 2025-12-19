@@ -7,13 +7,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0004_remove_course_participants_and_more'),
+        ("courses", "0004_remove_course_participants_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='location',
-            name='coordinates',
-            field=django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=4326, verbose_name='Koordinaten'),
+            model_name="location",
+            name="coordinates",
+            field=django.contrib.gis.db.models.fields.PointField(
+                blank=True, null=True, srid=4326, verbose_name="Koordinaten"
+            ),
         ),
     ]

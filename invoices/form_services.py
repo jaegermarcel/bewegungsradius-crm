@@ -1,9 +1,11 @@
-from django.utils import timezone
+import logging
 from decimal import Decimal
 
+from django.utils import timezone
+
 from customers.models import CustomerDiscountCode
+
 from .models import Invoice
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +16,8 @@ class DiscountCodeQuerySetManager:
     def get_available_codes(self, post_data=None, instance=None):
         """Gibt verfügbare Rabattcodes basierend auf Kontext zurück"""
         # Fall 1: Neuer Datensatz mit POST-Daten (Customer ausgewählt)
-        if post_data and 'customer' in post_data:
-            return self._get_codes_for_customer_id(post_data.get('customer'))
+        if post_data and "customer" in post_data:
+            return self._get_codes_for_customer_id(post_data.get("customer"))
 
         # Fall 2: Bestehender Datensatz
         if instance and instance.pk:
@@ -48,9 +50,9 @@ class DiscountCodeQuerySetManager:
         """Basis-QuerySet für gültige Codes"""
         today = timezone.now().date()
         return CustomerDiscountCode.objects.filter(
-            status__in=['planned', 'sent'],
+            status__in=["planned", "sent"],
             valid_from__lte=today,
-            valid_until__gte=today
+            valid_until__gte=today,
         )
 
 
@@ -83,7 +85,11 @@ class DiscountCodeProcessor:
                 self._remove_discount(instance, original)
 
             # Code wurde geändert
-            elif original_had_code and now_has_code and original.discount_code != instance.discount_code:
+            elif (
+                original_had_code
+                and now_has_code
+                and original.discount_code != instance.discount_code
+            ):
                 self._change_discount(instance, original)
 
         except Invoice.DoesNotExist:
@@ -93,7 +99,9 @@ class DiscountCodeProcessor:
     def _apply_discount(self, instance):
         """Wendet Rabatt auf Invoice an"""
         instance.original_amount = instance.amount
-        instance.discount_amount = instance.discount_code.calculate_discount(instance.amount)
+        instance.discount_amount = instance.discount_code.calculate_discount(
+            instance.amount
+        )
         instance.amount = instance.amount - instance.discount_amount
 
         logger.info(f"Rabattcode {instance.discount_code.code} auf Invoice angewendet")
@@ -103,7 +111,7 @@ class DiscountCodeProcessor:
         if instance.original_amount:
             instance.amount = instance.original_amount
             instance.original_amount = None
-            instance.discount_amount = Decimal('0.00')
+            instance.discount_amount = Decimal("0.00")
 
         # Gib alten Code frei
         self._release_discount_code(original.discount_code)
@@ -124,12 +132,14 @@ class DiscountCodeProcessor:
         # Gib alten Code frei
         self._release_discount_code(original.discount_code)
 
-        logger.info(f"Rabattcode gewechselt von {original.discount_code.code} zu {instance.discount_code.code}")
+        logger.info(
+            f"Rabattcode gewechselt von {original.discount_code.code} zu {instance.discount_code.code}"
+        )
 
     def _release_discount_code(self, discount_code):
         """Markiert Rabattcode als nicht verwendet"""
-        if discount_code and discount_code.status == 'used':
-            discount_code.status = 'sent'
+        if discount_code and discount_code.status == "used":
+            discount_code.status = "sent"
             discount_code.used_at = None
             discount_code.save()
 
@@ -148,9 +158,9 @@ class DiscountCodeValidator:
         return CustomerDiscountCode.objects.filter(
             pk=code.pk,
             customer=customer,
-            status__in=['planned', 'sent'],
+            status__in=["planned", "sent"],
             valid_from__lte=today,
-            valid_until__gte=today
+            valid_until__gte=today,
         ).exists()
 
     @staticmethod
@@ -162,8 +172,8 @@ class DiscountCodeValidator:
         today = timezone.now().date()
 
         return (
-                code.status in ['planned', 'sent'] and
-                code.valid_from <= today <= code.valid_until
+            code.status in ["planned", "sent"]
+            and code.valid_from <= today <= code.valid_until
         )
 
 
@@ -177,11 +187,11 @@ class DiscountDisplay:
             return None
 
         return {
-            'code': invoice.discount_code.code,
-            'original_amount': invoice.original_amount,
-            'discount_amount': invoice.discount_amount,
-            'final_amount': invoice.amount,
-            'discount_type': invoice.discount_code.get_discount_display()
+            "code": invoice.discount_code.code,
+            "original_amount": invoice.original_amount,
+            "discount_amount": invoice.discount_amount,
+            "final_amount": invoice.amount,
+            "discount_type": invoice.discount_code.get_discount_display(),
         }
 
     @staticmethod

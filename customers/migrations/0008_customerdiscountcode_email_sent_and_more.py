@@ -6,18 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('customers', '0007_remove_customerdiscountcode_minimum_amount_and_more'),
+        ("customers", "0007_remove_customerdiscountcode_minimum_amount_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customerdiscountcode',
-            name='email_sent',
-            field=models.BooleanField(default=False, verbose_name='E-Mail versendet'),
+            model_name="customerdiscountcode",
+            name="email_sent",
+            field=models.BooleanField(default=False, verbose_name="E-Mail versendet"),
         ),
         migrations.AddField(
-            model_name='customerdiscountcode',
-            name='email_sent_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='E-Mail versendet am'),
+            model_name="customerdiscountcode",
+            name="email_sent_at",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="E-Mail versendet am"
+            ),
         ),
     ]

@@ -1,12 +1,12 @@
-from django.db import migrations, models
 import django.db.models.deletion
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('company', '0002_transfer_company_info'),
-        ('invoices', '0008_invoice_discount_amount_invoice_discount_code_and_more'),
+        ("company", "0002_transfer_company_info"),
+        ("invoices", "0008_invoice_discount_amount_invoice_discount_code_and_more"),
     ]
 
     operations = [
@@ -14,4 +14,3 @@ class Migration(migrations.Migration):
         # migrations.DeleteModel(name='CompanyInfo'),
         # Stattdessen nur deaktivieren für später
     ]
-

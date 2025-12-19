@@ -6,13 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0002_remove_course_max_participants_and_more'),
+        ("courses", "0002_remove_course_max_participants_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='course',
-            name='special',
-            field=models.CharField(blank=True, choices=[('', 'Kein Special'), ('winter_special', 'Winter Special'), ('summer_special', 'Sommer Special'), ('early_bird', 'Early Bird'), ('black_friday', 'Black Friday'), ('new_year', 'Neujahrs-Aktion')], max_length=50, verbose_name='Special'),
+            model_name="course",
+            name="special",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("", "Kein Special"),
+                    ("winter_special", "Winter Special"),
+                    ("summer_special", "Sommer Special"),
+                    ("early_bird", "Early Bird"),
+                    ("black_friday", "Black Friday"),
+                    ("new_year", "Neujahrs-Aktion"),
+                ],
+                max_length=50,
+                verbose_name="Special",
+            ),
         ),
     ]

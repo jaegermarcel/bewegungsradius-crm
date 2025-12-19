@@ -6,23 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('customers', '0008_customerdiscountcode_email_sent_and_more'),
+        ("customers", "0008_customerdiscountcode_email_sent_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customerdiscountcode',
-            name='cancelled_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Storniert am'),
+            model_name="customerdiscountcode",
+            name="cancelled_at",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="Storniert am"
+            ),
         ),
         migrations.AddField(
-            model_name='customerdiscountcode',
-            name='cancelled_reason',
-            field=models.TextField(blank=True, verbose_name='Stornierungsgrund'),
+            model_name="customerdiscountcode",
+            name="cancelled_reason",
+            field=models.TextField(blank=True, verbose_name="Stornierungsgrund"),
         ),
         migrations.AddField(
-            model_name='customerdiscountcode',
-            name='is_cancelled',
-            field=models.BooleanField(default=False, verbose_name='Storniert'),
+            model_name="customerdiscountcode",
+            name="is_cancelled",
+            field=models.BooleanField(default=False, verbose_name="Storniert"),
         ),
     ]

@@ -5,18 +5,21 @@ Tasks sind nur noch dünne Wrapper um Services
 Alle Geschäftslogik ist in email_services/ (wartbar + testbar)
 """
 
+import logging
+
 from celery import shared_task
 from django.utils import timezone
-import logging
+
+from company.models import CompanyInfo
 
 from .email_services.birthday_emails import BirthdayEmailService
 from .email_services.discount_emails import DiscountCodeEmailService
-from company.models import CompanyInfo
 
 logger = logging.getLogger(__name__)
 
 
 # ==================== DISCOUNT CODE TASKS ====================
+
 
 @shared_task
 def send_course_completion_emails():
@@ -28,27 +31,31 @@ def send_course_completion_emails():
         return result
     except Exception as e:
         logger.error(f"❌ Fehler beim Versand von Completion-Emails: {e}")
-        return {'sent': 0, 'errors': 1, 'error': str(e)}
+        return {"sent": 0, "errors": 1, "error": str(e)}
 
 
 @shared_task
 def delete_old_discount_codes():
     """Löscht Rabattcodes älter als 13 Monate"""
     try:
-        from customers.models import CustomerDiscountCode
         from dateutil.relativedelta import relativedelta
 
+        from customers.models import CustomerDiscountCode
+
         cutoff_date = timezone.now() - relativedelta(months=13)
-        count = CustomerDiscountCode.objects.filter(created_at__lt=cutoff_date).delete()[0]
+        count = CustomerDiscountCode.objects.filter(
+            created_at__lt=cutoff_date
+        ).delete()[0]
 
         logger.info(f"✓ {count} alte Rabattcodes gelöscht")
-        return {'deleted': count}
+        return {"deleted": count}
     except Exception as e:
         logger.error(f"❌ Fehler beim Löschen alter Codes: {e}")
-        return {'deleted': 0, 'error': str(e)}
+        return {"deleted": 0, "error": str(e)}
 
 
 # ==================== BIRTHDAY EMAIL TASKS ====================
+
 
 @shared_task
 def check_and_send_birthday_emails():
@@ -76,8 +83,7 @@ def check_and_send_birthday_emails():
     except Exception as e:
         logger.error(f"❌ Kritischer Fehler bei Geburtstagsprüfung: {e}")
         return {
-            'sent': 0,
-            'errors': 1,
-            'failed': [{'error': str(e)}],
+            "sent": 0,
+            "errors": 1,
+            "failed": [{"error": str(e)}],
         }
-

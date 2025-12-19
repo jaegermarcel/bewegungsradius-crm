@@ -3,14 +3,15 @@ Final Address Validator
 Akzeptiert: house, farm, cottage, etc.
 """
 
-import logging
-from typing import Tuple, Optional
-import requests
-from django.utils.html import format_html
-from django.forms import ValidationError
-from django.core.cache import cache
 import hashlib
 import json
+import logging
+from typing import Optional, Tuple
+
+import requests
+from django.core.cache import cache
+from django.forms import ValidationError
+from django.utils.html import format_html
 
 logger = logging.getLogger(__name__)
 
@@ -26,30 +27,39 @@ class AddressValidator:
 
     # ✅ Akzeptierte Gebäudetypen
     VALID_BUILDING_TYPES = {
-        'house',           # Normales Haus
-        'farm',            # Bauernhof
-        'cottage',         # Häuschen
-        'building',        # Gebäude
-        'apartments',      # Mehrfamilienhaus
-        'detached',        # Einfamilienhaus
-        'semi',            # Doppelhaus
-        'terrace',         # Reihenhaus
-        'bungalow',        # Bungalow
+        "house",  # Normales Haus
+        "farm",  # Bauernhof
+        "cottage",  # Häuschen
+        "building",  # Gebäude
+        "apartments",  # Mehrfamilienhaus
+        "detached",  # Einfamilienhaus
+        "semi",  # Doppelhaus
+        "terrace",  # Reihenhaus
+        "bungalow",  # Bungalow
     }
 
     # ❌ Nicht akzeptierte Typen
     INVALID_BUILDING_TYPES = {
-        'residential',     # NUR STRASSE
-        'road',            # NUR STRASSE
-        'street',          # NUR STRASSE
+        "residential",  # NUR STRASSE
+        "road",  # NUR STRASSE
+        "street",  # NUR STRASSE
     }
 
-    def validate(self, street: str, house_number: str, postal_code: str, city: str, country: str = "Deutschland") -> Tuple[bool, Optional[str]]:
+    def validate(
+        self,
+        street: str,
+        house_number: str,
+        postal_code: str,
+        city: str,
+        country: str = "Deutschland",
+    ) -> Tuple[bool, Optional[str]]:
         """Validiert Adresse"""
 
         if self.DEBUG:
             logger.info(f"🔍 [DEBUG] Starting address validation")
-            logger.info(f"   📍 Input: {street} {house_number}, {postal_code} {city}, {country}")
+            logger.info(
+                f"   📍 Input: {street} {house_number}, {postal_code} {city}, {country}"
+            )
 
         if not self._has_required_fields(street, city):
             msg = "❌ Straße und Stadt sind erforderlich"
@@ -70,7 +80,9 @@ class AddressValidator:
             if self.DEBUG:
                 logger.info(f"🔍 [DEBUG] No cache found, making API request...")
 
-            is_found, message = self._search_address(street, house_number, postal_code, city, country)
+            is_found, message = self._search_address(
+                street, house_number, postal_code, city, country
+            )
             result = (is_found, message)
 
             cache.set(cache_key, result, self.CACHE_TIMEOUT)
@@ -87,13 +99,17 @@ class AddressValidator:
         """Prüft ob Pflichtfelder vorhanden sind"""
         return bool(street and city)
 
-    def _get_cache_key(self, street: str, house_number: str, postal_code: str, city: str) -> str:
+    def _get_cache_key(
+        self, street: str, house_number: str, postal_code: str, city: str
+    ) -> str:
         """Generiert Cache-Schlüssel"""
         address_str = f"{street}_{house_number}_{postal_code}_{city}".lower()
         hash_digest = hashlib.md5(address_str.encode()).hexdigest()
         return f"address_validation_{hash_digest}"
 
-    def _search_address(self, street: str, house_number: str, postal_code: str, city: str, country: str) -> Tuple[bool, str]:
+    def _search_address(
+        self, street: str, house_number: str, postal_code: str, city: str, country: str
+    ) -> Tuple[bool, str]:
         """Sucht Adresse via Nominatim"""
         address_parts = [f"{street} {house_number}".strip(), postal_code, city, country]
         address_string = ", ".join([p for p in address_parts if p])
@@ -102,29 +118,28 @@ class AddressValidator:
             logger.info(f"🔗 [DEBUG] Nominatim Query String: {address_string}")
 
         params = {
-            'q': address_string,
-            'format': 'json',
-            'limit': 1,
-            'addressdetails': 1
+            "q": address_string,
+            "format": "json",
+            "limit": 1,
+            "addressdetails": 1,
         }
 
-        headers = {'User-Agent': self.USER_AGENT}
+        headers = {"User-Agent": self.USER_AGENT}
 
         try:
             if self.DEBUG:
                 logger.info(f"📡 [DEBUG] Sending request to Nominatim...")
 
             response = requests.get(
-                self.NOMINATIM_URL,
-                params=params,
-                timeout=self.TIMEOUT,
-                headers=headers
+                self.NOMINATIM_URL, params=params, timeout=self.TIMEOUT, headers=headers
             )
 
             if self.DEBUG:
                 logger.info(f"📊 [DEBUG] Status Code: {response.status_code}")
                 logger.info(f"🔗 [DEBUG] Full URL: {response.url}")
-                logger.info(f"⏱️  [DEBUG] Response Time: {response.elapsed.total_seconds():.2f}s")
+                logger.info(
+                    f"⏱️  [DEBUG] Response Time: {response.elapsed.total_seconds():.2f}s"
+                )
 
             response.raise_for_status()
 
@@ -133,7 +148,9 @@ class AddressValidator:
             if self.DEBUG:
                 logger.info(f"📋 [DEBUG] Results count: {len(results)}")
                 if results:
-                    logger.debug(f"📋 [DEBUG] Full Response:\n{json.dumps(results, indent=2, ensure_ascii=False)}")
+                    logger.debug(
+                        f"📋 [DEBUG] Full Response:\n{json.dumps(results, indent=2, ensure_ascii=False)}"
+                    )
 
             if not results:
                 msg = f"❌ Adresse nicht gefunden: {address_string}"
@@ -142,14 +159,19 @@ class AddressValidator:
                 return False, msg
 
             result = results[0]
-            address = result.get('address', {})
+            address = result.get("address", {})
 
             # Extrahiere Details
-            found_city = address.get('city') or address.get('town') or address.get('village') or address.get('hamlet')
-            found_postal = address.get('postcode')
-            found_house_number = address.get('house_number')
-            result_type = result.get('type')
-            importance = float(result.get('importance', 0))
+            found_city = (
+                address.get("city")
+                or address.get("town")
+                or address.get("village")
+                or address.get("hamlet")
+            )
+            found_postal = address.get("postcode")
+            found_house_number = address.get("house_number")
+            result_type = result.get("type")
+            importance = float(result.get("importance", 0))
 
             if self.DEBUG:
                 logger.info(f"✅ [DEBUG] FIRST RESULT DETAILS:")
@@ -200,7 +222,9 @@ class AddressValidator:
             # ❌ Problem 2: Stadt stimmt nicht
             city_match = self._cities_match(city, found_city)
             if self.DEBUG:
-                logger.info(f"   City Match? {city_match} (input={city}, found={found_city})")
+                logger.info(
+                    f"   City Match? {city_match} (input={city}, found={found_city})"
+                )
 
             if not city_match:
                 msg = f"⚠️ Stadt: '{city}' vs gefunden '{found_city}'"
@@ -212,7 +236,9 @@ class AddressValidator:
             if postal_code and found_postal:
                 postal_match = self._postal_codes_match(postal_code, found_postal)
                 if self.DEBUG:
-                    logger.info(f"   Postal Match? {postal_match} (input={postal_code}, found={found_postal})")
+                    logger.info(
+                        f"   Postal Match? {postal_match} (input={postal_code}, found={found_postal})"
+                    )
 
                 if not postal_match:
                     msg = f"⚠️ PLZ: '{postal_code}' vs gefunden '{found_postal}'"
@@ -222,9 +248,13 @@ class AddressValidator:
 
             # ❌ Problem 4: Hausnummer stimmt nicht
             if house_number and found_house_number:
-                house_match = self._house_numbers_match(house_number, found_house_number)
+                house_match = self._house_numbers_match(
+                    house_number, found_house_number
+                )
                 if self.DEBUG:
-                    logger.info(f"   House Number Match? {house_match} (input={house_number}, found={found_house_number})")
+                    logger.info(
+                        f"   House Number Match? {house_match} (input={house_number}, found={found_house_number})"
+                    )
 
                 if not house_match:
                     msg = f"⚠️ Hausnummer: '{house_number}' vs gefunden '{found_house_number}'"
@@ -247,7 +277,9 @@ class AddressValidator:
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 403:
                 msg = "⚠️ Nominatim Server überlastet"
-                logger.warning(f"❌ [DEBUG] Nominatim 403 Forbidden - Rate limit exceeded")
+                logger.warning(
+                    f"❌ [DEBUG] Nominatim 403 Forbidden - Rate limit exceeded"
+                )
                 return False, msg
             elif e.response.status_code == 503:
                 msg = "⚠️ Nominatim Service temporär nicht verfügbar"
@@ -292,10 +324,18 @@ class AdminAddressValidator:
     """Helper für Admin-Integration"""
 
     @staticmethod
-    def validate_and_display(street: str, house_number: str, postal_code: str, city: str, country: str = "Deutschland") -> str:
+    def validate_and_display(
+        street: str,
+        house_number: str,
+        postal_code: str,
+        city: str,
+        country: str = "Deutschland",
+    ) -> str:
         """Validiert Adresse und gibt formatiertes HTML zurück"""
         validator = AddressValidator()
-        is_valid, message = validator.validate(street, house_number, postal_code, city, country)
+        is_valid, message = validator.validate(
+            street, house_number, postal_code, city, country
+        )
 
         if not message:
             return ""
@@ -303,17 +343,17 @@ class AdminAddressValidator:
         if "❌" in message or "NUR STRASSE" in message:
             return format_html(
                 '<div style="padding: 10px; color: #b81d1d; margin-top: 10px; border-radius: 4px;">{}</div>',
-                message
+                message,
             )
         elif "⚠️" in message:
             return format_html(
                 '<div style="padding: 10px; color: #b34f12; margin-top: 10px; border-radius: 4px;">{}</div>',
-                message
+                message,
             )
         else:
             return format_html(
                 '<div style="padding: 10px; color: #1e8f49; margin-top: 10px; border-radius: 4px;">{}</div>',
-                message
+                message,
             )
 
 
@@ -326,11 +366,7 @@ class CustomerAdminValidationMixin:
 
         validator = AddressValidator()
         is_valid, message = validator.validate(
-            obj.street,
-            obj.house_number,
-            obj.postal_code,
-            obj.city,
-            obj.country
+            obj.street, obj.house_number, obj.postal_code, obj.city, obj.country
         )
 
         super().save_model(request, obj, form, change)
@@ -339,16 +375,16 @@ class CustomerAdminValidationMixin:
             logger.info(f"📝 [SAVE] Validation message: {message}")
 
             if "❌" in message or "NUR STRASSE" in message:
-                self.message_user(request, message, level='ERROR')
+                self.message_user(request, message, level="ERROR")
             elif "⚠️" in message:
-                self.message_user(request, message, level='WARNING')
+                self.message_user(request, message, level="WARNING")
             else:
-                self.message_user(request, message, level='SUCCESS')
+                self.message_user(request, message, level="SUCCESS")
 
     def get_readonly_fields(self, request, obj=None):
         """Füge Validierungs-Feld hinzu (readonly)"""
         readonly = list(super().get_readonly_fields(request, obj))
-        readonly.append('address_validation_display')
+        readonly.append("address_validation_display")
         return readonly
 
     def address_validation_display(self, obj):
@@ -359,11 +395,7 @@ class CustomerAdminValidationMixin:
             )
 
         return AdminAddressValidator.validate_and_display(
-            obj.street,
-            obj.house_number,
-            obj.postal_code,
-            obj.city,
-            obj.country
+            obj.street, obj.house_number, obj.postal_code, obj.city, obj.country
         )
 
     address_validation_display.short_description = "Adressvalidierung"
@@ -375,10 +407,10 @@ class CustomerAddressForm:
     @staticmethod
     def validate_address(cleaned_data):
         """Validiert Adresse in Form"""
-        street = cleaned_data.get('street')
-        city = cleaned_data.get('city')
-        postal_code = cleaned_data.get('postal_code')
-        house_number = cleaned_data.get('house_number')
+        street = cleaned_data.get("street")
+        city = cleaned_data.get("city")
+        postal_code = cleaned_data.get("postal_code")
+        house_number = cleaned_data.get("house_number")
 
         if not street or not city:
             return

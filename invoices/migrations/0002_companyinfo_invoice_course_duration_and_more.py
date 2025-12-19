@@ -6,76 +6,110 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('invoices', '0001_initial'),
+        ("invoices", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CompanyInfo',
+            name="CompanyInfo",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200, verbose_name='Name')),
-                ('street', models.CharField(max_length=200, verbose_name='Straße')),
-                ('house_number', models.CharField(max_length=10, verbose_name='Hausnummer')),
-                ('postal_code', models.CharField(max_length=10, verbose_name='PLZ')),
-                ('city', models.CharField(max_length=100, verbose_name='Stadt')),
-                ('phone', models.CharField(max_length=50, verbose_name='Telefon')),
-                ('email', models.EmailField(max_length=254, verbose_name='E-Mail')),
-                ('tax_number', models.CharField(max_length=50, verbose_name='Steuernummer')),
-                ('bank_name', models.CharField(max_length=200, verbose_name='Bankname')),
-                ('iban', models.CharField(max_length=34, verbose_name='IBAN')),
-                ('bic', models.CharField(max_length=11, verbose_name='BIC')),
-                ('logo', models.ImageField(blank=True, null=True, upload_to='company/', verbose_name='Logo')),
-                ('is_active', models.BooleanField(default=True, verbose_name='Aktiv')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=200, verbose_name="Name")),
+                ("street", models.CharField(max_length=200, verbose_name="Straße")),
+                (
+                    "house_number",
+                    models.CharField(max_length=10, verbose_name="Hausnummer"),
+                ),
+                ("postal_code", models.CharField(max_length=10, verbose_name="PLZ")),
+                ("city", models.CharField(max_length=100, verbose_name="Stadt")),
+                ("phone", models.CharField(max_length=50, verbose_name="Telefon")),
+                ("email", models.EmailField(max_length=254, verbose_name="E-Mail")),
+                (
+                    "tax_number",
+                    models.CharField(max_length=50, verbose_name="Steuernummer"),
+                ),
+                (
+                    "bank_name",
+                    models.CharField(max_length=200, verbose_name="Bankname"),
+                ),
+                ("iban", models.CharField(max_length=34, verbose_name="IBAN")),
+                ("bic", models.CharField(max_length=11, verbose_name="BIC")),
+                (
+                    "logo",
+                    models.ImageField(
+                        blank=True, null=True, upload_to="company/", verbose_name="Logo"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True, verbose_name="Aktiv")),
             ],
             options={
-                'verbose_name': 'Firmeninformation',
-                'verbose_name_plural': 'Firmeninformationen',
+                "verbose_name": "Firmeninformation",
+                "verbose_name_plural": "Firmeninformationen",
             },
         ),
         migrations.AddField(
-            model_name='invoice',
-            name='course_duration',
-            field=models.IntegerField(default=60, verbose_name='Dauer pro Einheit (Minuten)'),
+            model_name="invoice",
+            name="course_duration",
+            field=models.IntegerField(
+                default=60, verbose_name="Dauer pro Einheit (Minuten)"
+            ),
         ),
         migrations.AddField(
-            model_name='invoice',
-            name='course_id_custom',
-            field=models.CharField(blank=True, max_length=50, verbose_name='Kurs-ID'),
+            model_name="invoice",
+            name="course_id_custom",
+            field=models.CharField(blank=True, max_length=50, verbose_name="Kurs-ID"),
         ),
         migrations.AddField(
-            model_name='invoice',
-            name='course_units',
-            field=models.IntegerField(default=10, verbose_name='Anzahl Kurseinheiten'),
+            model_name="invoice",
+            name="course_units",
+            field=models.IntegerField(default=10, verbose_name="Anzahl Kurseinheiten"),
         ),
         migrations.AddField(
-            model_name='invoice',
-            name='is_prevention_certified',
-            field=models.BooleanField(default=True, verbose_name='Zertifiziert nach § 20 SGB V'),
+            model_name="invoice",
+            name="is_prevention_certified",
+            field=models.BooleanField(
+                default=True, verbose_name="Zertifiziert nach § 20 SGB V"
+            ),
         ),
         migrations.AddField(
-            model_name='invoice',
-            name='is_tax_exempt',
-            field=models.BooleanField(default=True, verbose_name='Kleinunternehmerregelung (§19 UStG)'),
+            model_name="invoice",
+            name="is_tax_exempt",
+            field=models.BooleanField(
+                default=True, verbose_name="Kleinunternehmerregelung (§19 UStG)"
+            ),
         ),
         migrations.AddField(
-            model_name='invoice',
-            name='zpp_prevention_id',
-            field=models.CharField(blank=True, max_length=50, verbose_name='ZPP Präventions-ID'),
+            model_name="invoice",
+            name="zpp_prevention_id",
+            field=models.CharField(
+                blank=True, max_length=50, verbose_name="ZPP Präventions-ID"
+            ),
         ),
         migrations.AlterField(
-            model_name='invoice',
-            name='amount',
-            field=models.DecimalField(decimal_places=2, max_digits=8, verbose_name='Betrag (Netto)'),
+            model_name="invoice",
+            name="amount",
+            field=models.DecimalField(
+                decimal_places=2, max_digits=8, verbose_name="Betrag (Netto)"
+            ),
         ),
         migrations.AlterField(
-            model_name='invoice',
-            name='issue_date',
-            field=models.DateField(verbose_name='Rechnungsdatum'),
+            model_name="invoice",
+            name="issue_date",
+            field=models.DateField(verbose_name="Rechnungsdatum"),
         ),
         migrations.AlterField(
-            model_name='invoice',
-            name='tax_rate',
-            field=models.DecimalField(decimal_places=2, default=0.0, max_digits=5, verbose_name='MwSt. (%)'),
+            model_name="invoice",
+            name="tax_rate",
+            field=models.DecimalField(
+                decimal_places=2, default=0.0, max_digits=5, verbose_name="MwSt. (%)"
+            ),
         ),
     ]

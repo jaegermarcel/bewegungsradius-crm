@@ -1,6 +1,6 @@
-from django.utils.html import format_html
 import logging
 
+from django.utils.html import format_html
 
 from bewegungsradius.core.admin_styles import Colors, DisplayHelpers
 
@@ -19,7 +19,7 @@ class LocationAdminDisplay:
     def get_address(location):
         """Formatiert Adresse"""
         if not location.city:
-            return '-'
+            return "-"
         if location.postal_code:
             return f"{location.postal_code} {location.city}"
         return location.city
@@ -29,13 +29,13 @@ class LocationAdminDisplay:
         """Formatiert Kapazität"""
         return format_html(
             '<strong>{}</strong> <small style="color: #6b7280;">Teilnehmer</small>',
-            location.max_participants
+            location.max_participants,
         )
 
     @staticmethod
     def get_registered_date(location):
         """Formatiert Erstellungsdatum"""
-        return location.created_at.strftime('%d.%m.%Y')
+        return location.created_at.strftime("%d.%m.%Y")
 
 
 class CourseAdminDisplay:
@@ -48,17 +48,19 @@ class CourseAdminDisplay:
     @staticmethod
     def get_start_time(course):
         """Formatiert Kurszeit"""
-        return course.start_time.strftime('%H:%M') if course.start_time else '-'
+        return course.start_time.strftime("%H:%M") if course.start_time else "-"
 
     def get_location_info(course):
         """Formatiert Standort-Info mit Kapazität"""
 
         # Online-Kurs
         if not course.location:
-            location_html = format_html(
-                '<span style="color: #3b82f6;">Online</span>'
+            location_html = format_html('<span style="color: #3b82f6;">Online</span>')
+            return (
+                DisplayHelpers.muted_text(location_html)
+                if not course.is_active
+                else location_html
             )
-            return DisplayHelpers.muted_text(location_html) if not course.is_active else location_html
 
         current = course.participants_inperson.count()
         max_capacity = course.location.max_participants
@@ -76,18 +78,26 @@ class CourseAdminDisplay:
             else:
                 color_status = Colors.TEXT_SUCCESS  # Grün
 
-        status = 'Ausgebucht' if current >= max_capacity else f'{max_capacity - current} frei'
+        status = (
+            "Ausgebucht"
+            if current >= max_capacity
+            else f"{max_capacity - current} frei"
+        )
 
         # ✅ SCHRITT 3: Format HTML mit Farben
         location_html = format_html(
             '{}<br><small style="color: {};">{}</small>',
             course.location.name,
             color_status,
-            status
+            status,
         )
 
         # ✅ SCHRITT 4: Wrap mit muted_text wenn inaktiv
-        return DisplayHelpers.muted_text(location_html) if not course.is_active else location_html
+        return (
+            DisplayHelpers.muted_text(location_html)
+            if not course.is_active
+            else location_html
+        )
 
     @staticmethod
     def get_units_display(course):
@@ -101,10 +111,10 @@ class CourseAdminDisplay:
                     '<strong>{}</strong> <small style="color: #f59e0b;" title="{} wegen Feiertagen ausgefallen">({} ausgefallen)</small>',
                     total_units,
                     len(skipped),
-                    len(skipped)
+                    len(skipped),
                 )
-            return format_html('<strong>{}</strong>', total_units)
-        return '1'
+            return format_html("<strong>{}</strong>", total_units)
+        return "1"
 
     @staticmethod
     def get_participants(course):
@@ -116,7 +126,11 @@ class CourseAdminDisplay:
         # ✅ NEU: Prüfe is_active auch bei 0
         if total == 0:
             participants_html = format_html('<span style="color: #9ca3af;">0</span>')
-            return DisplayHelpers.muted_text(participants_html) if not course.is_active else participants_html
+            return (
+                DisplayHelpers.muted_text(participants_html)
+                if not course.is_active
+                else participants_html
+            )
 
         max_inperson = course.max_participants_inperson
 
@@ -134,7 +148,7 @@ class CourseAdminDisplay:
                 else:
                     color_total = Colors.TEXT_SUCCESS
             else:
-                color_total = '#3b82f6'
+                color_total = "#3b82f6"
 
         # Format HTML (Details bleiben grau)
         participants_html = format_html(
@@ -143,28 +157,30 @@ class CourseAdminDisplay:
             total,
             Colors.SECONDARY,  # ← Bleibt immer grau
             inperson,
-            online
+            online,
         )
 
         # ✅ NEU: Wrap mit muted_text wenn inaktiv
-        return DisplayHelpers.muted_text(participants_html) if not course.is_active else participants_html
+        return (
+            DisplayHelpers.muted_text(participants_html)
+            if not course.is_active
+            else participants_html
+        )
 
     @staticmethod
     def get_price_display(course):
         """Formatiert Preis"""
-        return format_html('<strong>{}</strong> €', course.price)
+        return format_html("<strong>{}</strong> €", course.price)
 
     @staticmethod
     def get_period(course):
         """Formatiert Zeitraum"""
-        start = course.start_date.strftime('%d.%m.%Y')
+        start = course.start_date.strftime("%d.%m.%Y")
 
         if course.end_date:
-            end = course.end_date.strftime('%d.%m.%Y')
+            end = course.end_date.strftime("%d.%m.%Y")
             return format_html(
-                '{}<br><small style="color: #6b7280;">bis {}</small>',
-                start,
-                end
+                '{}<br><small style="color: #6b7280;">bis {}</small>', start, end
             )
 
         return start
@@ -176,50 +192,58 @@ class CourseAdminDisplay:
             color_error = Colors.SECONDARY
             color_neutral = Colors.SECONDARY
         else:
-            color_success = '#10b981'
-            color_error = '#ef4444'
-            color_neutral = '#6b7280'
+            color_success = "#10b981"
+            color_error = "#ef4444"
+            color_neutral = "#6b7280"
 
         parts = []
 
         # Start-E-Mail Status
         if course.start_email_sent and course.start_email_sent_at:  # ← Prüfe BEIDE!
-            parts.append(format_html(
-                '<span style="color: {};">✓ Start</span> '
-                '<small style="color: {};">({})</small>',
-                color_success,
-                color_neutral,
-                course.start_email_sent_at.strftime('%d.%m.%y')
-            ))
+            parts.append(
+                format_html(
+                    '<span style="color: {};">✓ Start</span> '
+                    '<small style="color: {};">({})</small>',
+                    color_success,
+                    color_neutral,
+                    course.start_email_sent_at.strftime("%d.%m.%y"),
+                )
+            )
         elif course.start_email_sent:  # Sent aber keine Time
-            parts.append(format_html(
-                '<span style="color: {};">✓ Start</span> '
-                '<small style="color: {};">(-)</small>',
-                color_success,
-                color_neutral
-            ))
+            parts.append(
+                format_html(
+                    '<span style="color: {};">✓ Start</span> '
+                    '<small style="color: {};">(-)</small>',
+                    color_success,
+                    color_neutral,
+                )
+            )
         else:
-            parts.append(format_html(
-                '<span style="color: {};">✗ Start</span>',
-                color_error
-            ))
+            parts.append(
+                format_html('<span style="color: {};">✗ Start</span>', color_error)
+            )
 
         # Abschluss-E-Mail Status
-        if course.completion_email_sent and course.completion_email_sent_at:  # ← Prüfe BEIDE!
-            parts.append(format_html(
-                '<span style="color: {};">✓ Abschluss</span> '
-                '<small style="color: {};">({})</small>',
-                color_success,
-                color_neutral,
-                course.completion_email_sent_at.strftime('%d.%m.%y')
-            ))
+        if (
+            course.completion_email_sent and course.completion_email_sent_at
+        ):  # ← Prüfe BEIDE!
+            parts.append(
+                format_html(
+                    '<span style="color: {};">✓ Abschluss</span> '
+                    '<small style="color: {};">({})</small>',
+                    color_success,
+                    color_neutral,
+                    course.completion_email_sent_at.strftime("%d.%m.%y"),
+                )
+            )
         else:
-            parts.append(format_html(
-                '<span style="color: {};">○ Abschluss</span>',
-                color_neutral
-            ))
+            parts.append(
+                format_html(
+                    '<span style="color: {};">○ Abschluss</span>', color_neutral
+                )
+            )
 
-        return format_html('<br>'.join(parts))
+        return format_html("<br>".join(parts))
 
 
 class CourseWarningHandler:
@@ -238,7 +262,9 @@ class CourseWarningHandler:
         skipped_count = len(warnings)
 
         message = f"<strong>Achtung: {skipped_count} Kurseinheit(en) fallen wegen Feiertagen aus!</strong><br>"
-        message += f"<strong>Tatsächliche Anzahl Einheiten: {total_units}</strong><br><br>"
+        message += (
+            f"<strong>Tatsächliche Anzahl Einheiten: {total_units}</strong><br><br>"
+        )
         message += "<strong>Betroffene Termine:</strong><br>"
 
         for warning in warnings:
@@ -247,6 +273,8 @@ class CourseWarningHandler:
         message += "<br><em>Tipp: Verlängern Sie bei Bedarf das Enddatum manuell.</em>"
 
         from django.utils.html import format_html
+
         request._messages = None  # Reset messages
         from django.contrib import messages
+
         messages.warning(request, format_html(message))

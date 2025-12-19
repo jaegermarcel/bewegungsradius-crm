@@ -18,10 +18,7 @@ class CompanyInfo(SingletonModel):
     bic = models.CharField(max_length=11, verbose_name="BIC")
 
     logo = models.ImageField(
-        upload_to='company/',
-        blank=True,
-        null=True,
-        verbose_name="Logo"
+        upload_to="company/", blank=True, null=True, verbose_name="Logo"
     )
 
     class Meta:
@@ -29,4 +26,3 @@ class CompanyInfo(SingletonModel):
 
     def __str__(self):
         return self.name
-

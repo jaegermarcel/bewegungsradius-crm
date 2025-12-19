@@ -6,25 +6,36 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('customers', '0009_customerdiscountcode_cancelled_at_and_more'),
+        ("customers", "0009_customerdiscountcode_cancelled_at_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='customerdiscountcode',
-            name='email_sent',
+            model_name="customerdiscountcode",
+            name="email_sent",
         ),
         migrations.RemoveField(
-            model_name='customerdiscountcode',
-            name='is_cancelled',
+            model_name="customerdiscountcode",
+            name="is_cancelled",
         ),
         migrations.RemoveField(
-            model_name='customerdiscountcode',
-            name='is_used',
+            model_name="customerdiscountcode",
+            name="is_used",
         ),
         migrations.AddField(
-            model_name='customerdiscountcode',
-            name='status',
-            field=models.CharField(choices=[('planned', 'Geplant'), ('sent', 'Versendet'), ('used', 'Eingelöst'), ('expired', 'Abgelaufen'), ('cancelled', 'Storniert')], default='planned', max_length=20, verbose_name='Status'),
+            model_name="customerdiscountcode",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("planned", "Geplant"),
+                    ("sent", "Versendet"),
+                    ("used", "Eingelöst"),
+                    ("expired", "Abgelaufen"),
+                    ("cancelled", "Storniert"),
+                ],
+                default="planned",
+                max_length=20,
+                verbose_name="Status",
+            ),
         ),
     ]

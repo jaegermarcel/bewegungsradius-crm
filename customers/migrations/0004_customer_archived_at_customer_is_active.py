@@ -6,18 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('customers', '0003_remove_customer_phone'),
+        ("customers", "0003_remove_customer_phone"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customer',
-            name='archived_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Archiviert am'),
+            model_name="customer",
+            name="archived_at",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="Archiviert am"
+            ),
         ),
         migrations.AddField(
-            model_name='customer',
-            name='is_active',
-            field=models.BooleanField(default=True, verbose_name='Aktiv'),
+            model_name="customer",
+            name="is_active",
+            field=models.BooleanField(default=True, verbose_name="Aktiv"),
         ),
     ]

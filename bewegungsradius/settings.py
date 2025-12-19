@@ -11,10 +11,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+from pathlib import Path
 
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from pathlib import Path
 
 # CompanyInfo wird später geladen (nach App-Initialisierung)
 
@@ -26,85 +26,85 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'unfold',
-    'unfold.contrib.simple_history',
-    'unfold.contrib.import_export',
+    "unfold",
+    "unfold.contrib.simple_history",
+    "unfold.contrib.import_export",
     "unfold.contrib.filters",
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.gis',
-    'django_celery_beat',
-    'solo',
-    'simple_history',
-    'import_export',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.gis",
+    "django_celery_beat",
+    "solo",
+    "simple_history",
+    "import_export",
     "crispy_forms",
-    'leaflet',
-    'customers.apps.CustomersConfig',
-    'courses',
-    'invoices.apps.InvoicesConfig',
-    'offers',
-    'company',
-    'accounting.apps.AccountingConfig',
+    "leaflet",
+    "customers.apps.CustomersConfig",
+    "courses",
+    "invoices.apps.InvoicesConfig",
+    "offers",
+    "company",
+    "accounting.apps.AccountingConfig",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'simple_history.middleware.HistoryRequestMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
-ROOT_URLCONF = 'bewegungsradius.urls'
+ROOT_URLCONF = "bewegungsradius.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'bewegungsradius.wsgi.application'
+WSGI_APPLICATION = "bewegungsradius.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.environ.get('DATABASE_NAME'),
-        'USER': os.environ.get('DATABASE_USER'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
-        'HOST': os.environ.get('DATABASE_HOST'),
-        'PORT': os.environ.get('DATABASE_PORT'),
+    "default": {
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": os.environ.get("DATABASE_NAME"),
+        "USER": os.environ.get("DATABASE_USER"),
+        "PASSWORD": os.environ.get("DATABASE_PASSWORD"),
+        "HOST": os.environ.get("DATABASE_HOST"),
+        "PORT": os.environ.get("DATABASE_PORT"),
     }
 }
 
@@ -114,16 +114,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -131,8 +131,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'de-de'
-TIME_ZONE = 'Europe/Berlin'
+LANGUAGE_CODE = "de-de"
+TIME_ZONE = "Europe/Berlin"
 
 USE_I18N = True
 USE_L10N = True
@@ -142,8 +142,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Django Admin und andere App-Static-Files
 STATICFILES_DIRS = [
@@ -151,56 +151,58 @@ STATICFILES_DIRS = [
 ]
 
 STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # Celery Configuration
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://redis-crm:6379/0')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://redis-crm:6379/0')
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://redis-crm:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get(
+    "CELERY_RESULT_BACKEND", "redis://redis-crm:6379/0"
+)
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 
 # Leaflet Configuration
 LEAFLET_CONFIG = {
-    'DEFAULT_CENTER': (47.7261, 10.3158),  # Kempten (Allgäu)
-    'DEFAULT_ZOOM': 13,
-    'MIN_ZOOM': 3,
-    'MAX_ZOOM': 18,
-    'TILES': 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    'ATTRIBUTION_PREFIX': 'Powered by Leaflet',
-    'SCALE': 'both',
-    'MINIMAP': False,
+    "DEFAULT_CENTER": (47.7261, 10.3158),  # Kempten (Allgäu)
+    "DEFAULT_ZOOM": 13,
+    "MIN_ZOOM": 3,
+    "MAX_ZOOM": 18,
+    "TILES": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "ATTRIBUTION_PREFIX": "Powered by Leaflet",
+    "SCALE": "both",
+    "MINIMAP": False,
 }
 
-#paperless
+# paperless
 # Paperless Integration
-PAPERLESS_API_TOKEN = os.getenv('PAPERLESS_API_TOKEN', '')
-PAPERLESS_API_URL = os.getenv('PAPERLESS_API_URL', '')
+PAPERLESS_API_TOKEN = os.getenv("PAPERLESS_API_TOKEN", "")
+PAPERLESS_API_URL = os.getenv("PAPERLESS_API_URL", "")
 
 
 # Email Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'localhost')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False') == 'True'
-EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False') == 'True'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'info@bewegungsradius.com')
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False") == "True"
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False") == "True"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "info@bewegungsradius.com")
 
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 CRISPY_TEMPLATE_PACK = "unfold_crispy"
 CRISPY_ALLOWED_TEMPLATE_PACKS = ["unfold_crispy"]
@@ -209,11 +211,9 @@ UNFOLD = {
     "SITE_TITLE": "Bewegungsradius Admin",
     "SITE_HEADER": "Bewegungsradius",
     "SITE_URL": "/",
-
     "SHOW_THEME_SWITCH": True,
     "SHOW_VIEW_ON_SITE": True,
     "BORDER_RADIUS": "6px",
-
     "COLORS": {
         "primary": {
             "50": "248 246 244",
@@ -237,147 +237,159 @@ UNFOLD = {
             "important-dark": "var(--color-base-100)",
         },
     },
-
     "SIDEBAR": {
-    "show_search": True,
-    "show_all_applications": False,
-    "navigation": [
-        {
-            "title": _("Dashboard"),
-            "separator": True,
-            "items": [
-                {
-                    "title": _("Übersicht"),
-                    "icon": "dashboard",
-                    "link": reverse_lazy("admin:index"),
-                },
-            ],
-        },
-        {
-            "title": _("Kundenverwaltung"),
-            "separator": True,
-            "collapsible": True,
-            "items": [
-                {
-                    "title": _("Kunden"),
-                    "icon": "people",
-                    "link": reverse_lazy("admin:customers_customer_changelist"),
-                },
-                {
-                    "title": _("Rabattcodes"),
-                    "icon": "local_offer",
-                    "link": reverse_lazy("admin:customers_customerdiscountcode_changelist"),
-                },
-                {
-                    "title": _("Kontaktkanäle"),
-                    "icon": "phone",
-                    "link": reverse_lazy("admin:customers_contactchannel_changelist"),
-                },
-
-            ],
-        },
-        {
-            "title": _("Kurse & Angebote"),
-            "separator": True,
-            "collapsible": True,
-            "items": [
-                {
-                    "title": _("Kurse"),
-                    "icon": "school",
-                    "link": reverse_lazy("admin:courses_course_changelist"),
-                },
-                {
-                    "title": _("Angebote"),
-                    "icon": "description",
-                    "link": reverse_lazy("admin:offers_offer_changelist"),
-                },
-                {
-                    "title": _("Standorte"),
-                    "icon": "place",
-                    "link": reverse_lazy("admin:courses_location_changelist"),
-                },
-                {
-                    "title": _("ZPP-Zertifizierungen"),
-                    "icon": "verified",
-                    "link": reverse_lazy("admin:offers_zppcertification_changelist"),
-                },
-            ],
-        },
-        {
-            "title": _("Finanzen"),
-            "separator": True,
-            "collapsible": True,
-            "items": [
-                {
-                    "title": _("Rechnungen"),
-                    "icon": "receipt_long",
-                    "link": reverse_lazy("admin:invoices_invoice_changelist"),
-                },
-                {
-                    "title": _("Umsatz"),
-                    "icon": "receipt",
-                    "link": reverse_lazy("admin:accounting_accountingentry_changelist"),
-                },
-            ],
-        },
-        {
-            "title": _("Unternehmen"),
-            "separator": True,
-            "collapsible": True,
-            "items": [
-                {
-                    "title": _("Details"),
-                    "icon": "business",
-                    "link": reverse_lazy("admin:company_companyinfo_changelist"),
-                },
-            ],
-        },
-        {
-            "title": _("Automatisierung"),
-            "separator": True,
-            "collapsible": True,
-            "items": [
-                {
-                    "title": _("Periodische Aufgaben"),
-                    "icon": "schedule",
-                    "link": reverse_lazy("admin:django_celery_beat_periodictask_changelist"),
-                    "permission": lambda request: request.user.is_superuser,
-                },
-                {
-                    "title": _("Zeitpläne (Crontab)"),
-                    "icon": "access_time",
-                    "link": reverse_lazy("admin:django_celery_beat_crontabschedule_changelist"),
-                    "permission": lambda request: request.user.is_superuser,
-                },
-                {
-                    "title": _("Intervalle"),
-                    "icon": "timer",
-                    "link": reverse_lazy("admin:django_celery_beat_intervalschedule_changelist"),
-                    "permission": lambda request: request.user.is_superuser,
-                },
-            ],
-        },
-        {
-            "title": _("System"),
-            "separator": True,
-            "collapsible": True,
-            "items": [
-                {
-                    "title": _("Benutzer"),
-                    "icon": "admin_panel_settings",
-                    "link": reverse_lazy("admin:auth_user_changelist"),
-                    "permission": lambda request: request.user.is_superuser,
-                },
-                {
-                    "title": _("Gruppen"),
-                    "icon": "group",
-                    "link": reverse_lazy("admin:auth_group_changelist"),
-                    "permission": lambda request: request.user.is_superuser,
-                },
-            ],
-        },
-    ],
-},
+        "show_search": True,
+        "show_all_applications": False,
+        "navigation": [
+            {
+                "title": _("Dashboard"),
+                "separator": True,
+                "items": [
+                    {
+                        "title": _("Übersicht"),
+                        "icon": "dashboard",
+                        "link": reverse_lazy("admin:index"),
+                    },
+                ],
+            },
+            {
+                "title": _("Kundenverwaltung"),
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": _("Kunden"),
+                        "icon": "people",
+                        "link": reverse_lazy("admin:customers_customer_changelist"),
+                    },
+                    {
+                        "title": _("Rabattcodes"),
+                        "icon": "local_offer",
+                        "link": reverse_lazy(
+                            "admin:customers_customerdiscountcode_changelist"
+                        ),
+                    },
+                    {
+                        "title": _("Kontaktkanäle"),
+                        "icon": "phone",
+                        "link": reverse_lazy(
+                            "admin:customers_contactchannel_changelist"
+                        ),
+                    },
+                ],
+            },
+            {
+                "title": _("Kurse & Angebote"),
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": _("Kurse"),
+                        "icon": "school",
+                        "link": reverse_lazy("admin:courses_course_changelist"),
+                    },
+                    {
+                        "title": _("Angebote"),
+                        "icon": "description",
+                        "link": reverse_lazy("admin:offers_offer_changelist"),
+                    },
+                    {
+                        "title": _("Standorte"),
+                        "icon": "place",
+                        "link": reverse_lazy("admin:courses_location_changelist"),
+                    },
+                    {
+                        "title": _("ZPP-Zertifizierungen"),
+                        "icon": "verified",
+                        "link": reverse_lazy(
+                            "admin:offers_zppcertification_changelist"
+                        ),
+                    },
+                ],
+            },
+            {
+                "title": _("Finanzen"),
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": _("Rechnungen"),
+                        "icon": "receipt_long",
+                        "link": reverse_lazy("admin:invoices_invoice_changelist"),
+                    },
+                    {
+                        "title": _("Umsatz"),
+                        "icon": "receipt",
+                        "link": reverse_lazy(
+                            "admin:accounting_accountingentry_changelist"
+                        ),
+                    },
+                ],
+            },
+            {
+                "title": _("Unternehmen"),
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": _("Details"),
+                        "icon": "business",
+                        "link": reverse_lazy("admin:company_companyinfo_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": _("Automatisierung"),
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": _("Periodische Aufgaben"),
+                        "icon": "schedule",
+                        "link": reverse_lazy(
+                            "admin:django_celery_beat_periodictask_changelist"
+                        ),
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": _("Zeitpläne (Crontab)"),
+                        "icon": "access_time",
+                        "link": reverse_lazy(
+                            "admin:django_celery_beat_crontabschedule_changelist"
+                        ),
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": _("Intervalle"),
+                        "icon": "timer",
+                        "link": reverse_lazy(
+                            "admin:django_celery_beat_intervalschedule_changelist"
+                        ),
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                ],
+            },
+            {
+                "title": _("System"),
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": _("Benutzer"),
+                        "icon": "admin_panel_settings",
+                        "link": reverse_lazy("admin:auth_user_changelist"),
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": _("Gruppen"),
+                        "icon": "group",
+                        "link": reverse_lazy("admin:auth_group_changelist"),
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                ],
+            },
+        ],
+    },
 }
 
 # Security Settings (Production)
@@ -387,7 +399,7 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
+    X_FRAME_OPTIONS = "DENY"
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
