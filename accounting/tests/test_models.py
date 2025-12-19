@@ -8,7 +8,6 @@ accounting/tests/test_models.py - Tests für AccountingEntry Model (FIXED)
 
 from datetime import date, timedelta
 from decimal import Decimal
-from unittest.mock import MagicMock, patch
 
 import pytest
 from django.utils import timezone
@@ -19,9 +18,12 @@ pytestmark = pytest.mark.django_db
 # ==================== IMPORTS ====================
 
 from accounting.models import AccountingEntry
-from invoices.models import Invoice
-from tests.factories import (CompanyInfoFactory, CourseFactory,
-                             CustomerFactory, InvoiceFactory)
+from tests.factories import (
+    CompanyInfoFactory,
+    CourseFactory,
+    CustomerFactory,
+    InvoiceFactory,
+)
 
 # ==================== FIXTURES ====================
 

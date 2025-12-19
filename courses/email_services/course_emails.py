@@ -8,8 +8,11 @@ courses/email_services/course_emails.py - Kurs-E-Mails
 
 import logging
 
-from bewegungsradius.core.email import (BaseEmailService, EmailPayload,
-                                        EmailTemplateConfig)
+from bewegungsradius.core.email import (
+    BaseEmailService,
+    EmailPayload,
+    EmailTemplateConfig,
+)
 
 logger = logging.getLogger(__name__)
 

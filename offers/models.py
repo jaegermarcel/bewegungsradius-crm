@@ -72,7 +72,6 @@ class ZPPCertification(models.Model):
 
     def days_until_expiry(self):
         """Berechnet Tage bis Ablauf"""
-        from datetime import timedelta
 
         today = timezone.now().date()
         if today > self.valid_until:

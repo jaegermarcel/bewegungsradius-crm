@@ -9,15 +9,21 @@ from datetime import date, timedelta
 
 import pytest
 
-from tests.factories import (ActiveDiscountCodeFactory, CompanyInfoFactory,
-                             CourseFactory, CustomerDiscountCodeFactory,
-                             CustomerFactory, InvoiceFactory, LocationFactory,
-                             OfferFactory, ZPPCertificationFactory)
+from tests.factories import (
+    ActiveDiscountCodeFactory,
+    CompanyInfoFactory,
+    CourseFactory,
+    CustomerDiscountCodeFactory,
+    CustomerFactory,
+    InvoiceFactory,
+    LocationFactory,
+    OfferFactory,
+    ZPPCertificationFactory,
+)
 
 # ============================================================
 # FACTORIES IMPORT
 # ============================================================
-
 
 
 # ============================================================

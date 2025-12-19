@@ -4,8 +4,6 @@ customers/admin.py - REFACTORED
 Mit centralized admin_styles
 """
 
-from datetime import date
-
 from django import forms
 from django.contrib import admin
 from django.utils import timezone
@@ -17,9 +15,10 @@ from unfold.widgets import UnfoldAdminSelect2Widget
 
 from bewegungsradius.core.admin_styles import Colors  # Zentrale Farben
 from bewegungsradius.core.admin_styles import SimpleText  # Verschiedene Helper
-from bewegungsradius.core.admin_styles import \
-    StatusIndicator  # Pre-made Status (3 Varianten)
-from bewegungsradius.core.admin_styles import DisplayHelpers
+from bewegungsradius.core.admin_styles import (  # Pre-made Status (3 Varianten)
+    DisplayHelpers,
+    StatusIndicator,
+)
 from courses.models import Course
 
 from .address_validator import CustomerAdminValidationMixin

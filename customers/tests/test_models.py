@@ -24,10 +24,13 @@ pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from courses.models import Course
 from customers.models import ContactChannel, Customer, CustomerDiscountCode
-from tests.factories import (ActiveDiscountCodeFactory, CourseFactory,
-                             CustomerDiscountCodeFactory, CustomerFactory)
+from tests.factories import (
+    ActiveDiscountCodeFactory,
+    CourseFactory,
+    CustomerDiscountCodeFactory,
+    CustomerFactory,
+)
 
 # ==================== FIXTURES ====================
 

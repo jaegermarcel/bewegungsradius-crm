@@ -32,19 +32,13 @@ logger = logging.getLogger(__name__)
 class InvoiceSignalError(Exception):
     """Fehler bei Invoice Signal-Handling"""
 
-    pass
-
 
 class InvoiceCreationError(InvoiceSignalError):
     """Fehler beim Erstellen einer Rechnung"""
 
-    pass
-
 
 class InvoiceCancellationError(InvoiceSignalError):
     """Fehler beim Stornieren einer Rechnung"""
-
-    pass
 
 
 # ==================== Invoice Creation Service ====================

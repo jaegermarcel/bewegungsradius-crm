@@ -6,16 +6,18 @@ tests/test_email_base.py - Tests für BaseEmailService (pytest)
 ✅ Keine echten Templates nötig
 """
 
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
 pytestmark = pytest.mark.django_db
 
-from bewegungsradius.core.email import (BaseEmailService, EmailPayload,
-                                        EmailTemplateConfig)
-from bewegungsradius.core.email.exceptions import (EmailSendError,
-                                                   EmailValidationError)
+from bewegungsradius.core.email import (
+    BaseEmailService,
+    EmailPayload,
+    EmailTemplateConfig,
+)
+from bewegungsradius.core.email.exceptions import EmailSendError, EmailValidationError
 
 # ==================== TEST DOUBLES ====================
 

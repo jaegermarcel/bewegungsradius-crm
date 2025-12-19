@@ -7,4 +7,4 @@ class InvoicesConfig(AppConfig):
     verbose_name = "Rechnungen"
 
     def ready(self):
-        import invoices.signals
+        pass

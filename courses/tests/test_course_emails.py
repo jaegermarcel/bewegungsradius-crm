@@ -9,7 +9,7 @@ courses/tests/test_email_services.py - Tests für Course Email Services
 """
 
 from datetime import date, timedelta
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -18,14 +18,19 @@ pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from courses.email_services.course_emails import (CourseCompletionEmailService,
-                                                  CourseStartEmailService,
-                                                  DiscountCodeRepository,
-                                                  DiscountCodeService)
+from courses.email_services.course_emails import (
+    CourseCompletionEmailService,
+    CourseStartEmailService,
+    DiscountCodeRepository,
+    DiscountCodeService,
+)
 from customers.models import CustomerDiscountCode
-from tests.factories import (CompanyInfoFactory, CourseFactory,
-                             CourseWithParticipantsFactory,
-                             CustomerDiscountCodeFactory, CustomerFactory)
+from tests.factories import (
+    CompanyInfoFactory,
+    CourseFactory,
+    CourseWithParticipantsFactory,
+    CustomerFactory,
+)
 
 # ==================== FIXTURES ====================
 
@@ -437,7 +442,7 @@ class TestCourseEmailServicesIntegration:
     def test_full_course_email_workflow_start(self, company_info):
         """Test: Kompletter Workflow - Kurs Start Email"""
         # 1. Course mit Teilnehmern
-        course = CourseWithParticipantsFactory()
+        CourseWithParticipantsFactory()
 
         # 2. Service erstellen
         service = CourseStartEmailService(company_info=company_info)

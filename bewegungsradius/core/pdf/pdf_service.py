@@ -14,13 +14,9 @@ logger = logging.getLogger(__name__)
 class PdfGenerationError(Exception):
     """Fehler bei PDF-Generierung"""
 
-    pass
-
 
 class FileStorageError(Exception):
     """Fehler beim Speichern von Dateien"""
-
-    pass
 
 
 # ==================== HTML to PDF Converter ====================

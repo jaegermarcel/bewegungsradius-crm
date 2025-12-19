@@ -10,8 +10,8 @@ courses/tests/test_services.py - Tests für Course Services (UPDATED für neue C
 ✅ Integration Tests
 """
 
-from datetime import date, datetime, time, timedelta
-from unittest.mock import MagicMock, Mock, patch
+from datetime import date, time, timedelta
+from unittest.mock import MagicMock, patch
 
 import pytest
 from django.utils import timezone as tz
@@ -21,10 +21,14 @@ pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from courses.services import (CeleryTaskManager, CourseHolidayCalculator,
-                              CourseParticipantCounter,
-                              CourseScheduleCalculator, CourseStatusChecker,
-                              LocationGeocoder)
+from courses.services import (
+    CeleryTaskManager,
+    CourseHolidayCalculator,
+    CourseParticipantCounter,
+    CourseScheduleCalculator,
+    CourseStatusChecker,
+    LocationGeocoder,
+)
 from tests.factories import CourseFactory, CustomerFactory, LocationFactory
 
 # ==================== LOCATION GEOCODER TESTS ====================

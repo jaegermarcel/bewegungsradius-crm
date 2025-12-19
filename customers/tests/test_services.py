@@ -10,24 +10,30 @@ customers/tests/test_services.py - Tests für Customer Services (CORRECTED)
 ✅ Edge Case Tests
 """
 
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
 from django.contrib.gis.geos import Point
-from django.utils import timezone
 
 pytestmark = pytest.mark.django_db
 
 
 # ==================== IMPORTS ====================
 
-from customers.models import CustomerDiscountCode
-from customers.services import (AddressGeocoder, DiscountCodeCalculator,
-                                DiscountCodeFormatter, DiscountCodeGenerator,
-                                DiscountCodeValidator)
-from tests.factories import (CourseFactory, CustomerDiscountCodeFactory,
-                             CustomerFactory, OfferFactory)
+from customers.services import (
+    AddressGeocoder,
+    DiscountCodeCalculator,
+    DiscountCodeFormatter,
+    DiscountCodeGenerator,
+    DiscountCodeValidator,
+)
+from tests.factories import (
+    CourseFactory,
+    CustomerDiscountCodeFactory,
+    CustomerFactory,
+    OfferFactory,
+)
 
 # ==================== FIXTURES ====================
 

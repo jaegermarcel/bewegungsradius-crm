@@ -8,8 +8,8 @@ from django.contrib.gis.geos import Point
 # Models
 from company.models import CompanyInfo
 from courses.models import Course, Location
-from customers.models import (ContactChannel, Customer,  # ✅ HINZUGEFÜGT
-                              CustomerDiscountCode)
+from customers.models import Customer  # ✅ HINZUGEFÜGT
+from customers.models import ContactChannel, CustomerDiscountCode
 from invoices.models import Invoice
 from offers.models import Offer, ZPPCertification
 

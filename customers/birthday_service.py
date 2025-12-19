@@ -23,13 +23,9 @@ logger = logging.getLogger(__name__)
 class BirthdayEmailError(Exception):
     """Fehler beim Geburtstags-Email-Versand"""
 
-    pass
-
 
 class BirthdayCheckError(BirthdayEmailError):
     """Fehler beim Geburtstagsprüfung"""
-
-    pass
 
 
 # ==================== REPOSITORIES ====================
@@ -62,7 +58,6 @@ class CustomerRepository:
     def get_customers_with_birthday_in_days(self, days: int):
         """Gibt Kunden mit Geburtstag in X Tagen zurück"""
         try:
-            from django.db.models import Q
             from django.db.models.functions import ExtractDay, ExtractMonth
 
             target_date = timezone.now().date() + timezone.timedelta(days=days)

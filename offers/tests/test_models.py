@@ -411,7 +411,7 @@ class TestOfferWithZPPCertification:
         """Test: Offer bleibt wenn ZPP gelöscht (on_delete=SET_NULL)"""
         offer = OfferFactory(zpp_certification=active_zpp_certification)
 
-        cert_id = active_zpp_certification.id
+        active_zpp_certification.id
         active_zpp_certification.delete()
 
         # Offer sollte noch existieren, aber ohne Zertifizierung

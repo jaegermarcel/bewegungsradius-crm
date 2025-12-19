@@ -91,12 +91,10 @@ class BaseEmailService(ABC):
     @abstractmethod
     def build_email_payload(self, *args, **kwargs) -> EmailPayload:
         """Muss von Subklasse implementiert werden"""
-        pass
 
     @abstractmethod
     def get_template_config(self, *args, **kwargs) -> EmailTemplateConfig:
         """Muss von Subklasse implementiert werden"""
-        pass
 
     def send_single_email(self, *args, **kwargs) -> bool:
         """Template-Method: Versendet eine E-Mail

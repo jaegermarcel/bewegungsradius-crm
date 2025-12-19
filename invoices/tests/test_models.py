@@ -16,7 +16,6 @@ invoices/tests/test_models.py - Tests für Invoice Model und Services
 
 from datetime import date, datetime, timedelta
 from decimal import Decimal
-from unittest.mock import MagicMock, patch
 
 import pytest
 from django.db import IntegrityError
@@ -27,13 +26,21 @@ pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from invoices.models import (CourseIdGenerator, DiscountApplier, Invoice,
-                             InvoiceDateManager, InvoiceInitializer,
-                             InvoiceNumberGenerator, TaxCalculator)
-from tests.factories import (ActiveDiscountCodeFactory, ContactChannelFactory,
-                             CourseFactory, CustomerDiscountCodeFactory,
-                             CustomerFactory, InvoiceFactory,
-                             InvoiceWithDiscountFactory)
+from invoices.models import (
+    CourseIdGenerator,
+    DiscountApplier,
+    Invoice,
+    InvoiceDateManager,
+    InvoiceInitializer,
+    InvoiceNumberGenerator,
+    TaxCalculator,
+)
+from tests.factories import (
+    CourseFactory,
+    CustomerFactory,
+    InvoiceFactory,
+    InvoiceWithDiscountFactory,
+)
 
 # ==================== FIXTURES ====================
 
@@ -845,7 +852,7 @@ class TestInvoiceSave:
         )
         invoice.save()
 
-        first_discount = invoice.discount_amount
+        invoice.discount_amount
 
         # Rabatt-Code entfernen
         invoice.discount_code = None

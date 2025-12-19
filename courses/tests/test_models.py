@@ -19,9 +19,14 @@ pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from courses.models import Course, Location
-from tests.factories import (CourseFactory, CourseWithParticipantsFactory,
-                             CustomerFactory, LocationFactory, OfferFactory)
+from courses.models import Location
+from tests.factories import (
+    CourseFactory,
+    CourseWithParticipantsFactory,
+    CustomerFactory,
+    LocationFactory,
+    OfferFactory,
+)
 
 # ==================== FIXTURES ====================
 
@@ -329,7 +334,7 @@ class TestCourseMethods:
         mock_calc_class.return_value = mock_calc
         mock_calc.get_course_dates.return_value = []
 
-        result = course.get_course_dates()
+        course.get_course_dates()
 
         mock_calc.get_course_dates.assert_called_once()
 
@@ -421,7 +426,7 @@ class TestCourseSignalsAndCelery:
         mock_task_manager = MagicMock()
         mock_task_manager_class.return_value = mock_task_manager
 
-        course = CourseFactory()
+        CourseFactory()
 
         # Task Manager sollte aufgerufen worden sein
         mock_task_manager_class.assert_called()
