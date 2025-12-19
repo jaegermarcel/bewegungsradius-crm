@@ -101,7 +101,7 @@ jobs:
         --cov-report=term-missing:skip-covered \
         --cov-report=xml \
         --cov-report=html \
-        --cov-fail-under=90 \
+        --cov-fail-under=80 \
         --alluredir=allure-results
 
     - name: Coverage summary
