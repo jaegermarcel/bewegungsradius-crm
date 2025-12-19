@@ -28,7 +28,13 @@ jobs:
       continue-on-error: true
 
     - name: Run isort (import sorting)
-      run: isort --check-only .
+      run: isort .
+
+    - name: Commit formatted imports
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "style: Auto-format imports with isort"
+        file_pattern: "*.py"
 
     - name: Run flake8 (linting)
       run: flake8 .

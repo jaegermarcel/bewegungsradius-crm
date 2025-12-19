@@ -21,14 +21,10 @@ pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from courses.services import (
-    CeleryTaskManager,
-    CourseHolidayCalculator,
-    CourseParticipantCounter,
-    CourseScheduleCalculator,
-    CourseStatusChecker,
-    LocationGeocoder,
-)
+from courses.services import (CeleryTaskManager, CourseHolidayCalculator,
+                              CourseParticipantCounter,
+                              CourseScheduleCalculator, CourseStatusChecker,
+                              LocationGeocoder)
 from tests.factories import CourseFactory, CustomerFactory, LocationFactory
 
 # ==================== LOCATION GEOCODER TESTS ====================

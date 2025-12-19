@@ -12,12 +12,8 @@ from unfold.contrib.filters.admin import RangeDateFilter
 from unfold.decorators import action, display
 from unfold.widgets import UnfoldAdminSelect2Widget
 
-from bewegungsradius.core.admin_styles import (
-    Colors,
-    DisplayHelpers,
-    SimpleText,
-    StatusIndicator,
-)
+from bewegungsradius.core.admin_styles import (Colors, DisplayHelpers,
+                                               SimpleText, StatusIndicator)
 from customers.models import CustomerDiscountCode
 
 from .admin_services import InvoiceActionHandler, InvoicePDFDownloadHandler
@@ -307,7 +303,8 @@ class InvoiceAdmin(SimpleHistoryAdmin, ImportExportModelAdmin, ModelAdmin):
     def send_invoice_email_action(self, request: HttpRequest, object_id: int):
         try:
             from company.models import CompanyInfo
-            from invoices.email_services.invoice_emails import InvoiceEmailService
+            from invoices.email_services.invoice_emails import \
+                InvoiceEmailService
 
             invoice = Invoice.objects.get(pk=object_id)
 

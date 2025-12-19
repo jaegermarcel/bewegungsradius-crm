@@ -21,16 +21,13 @@ pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from bewegungsradius.core.pdf.pdf_service import (
-    ConsumeFileStorage,
-    FileStorageError,
-    HtmlToPdfConverter,
-    PdfGenerationError,
-    PdfGenerator,
-    PdfService,
-    PdfServiceFactory,
-    TemplateRenderer,
-)
+from bewegungsradius.core.pdf.pdf_service import (ConsumeFileStorage,
+                                                  FileStorageError,
+                                                  HtmlToPdfConverter,
+                                                  PdfGenerationError,
+                                                  PdfGenerator, PdfService,
+                                                  PdfServiceFactory,
+                                                  TemplateRenderer)
 
 # ==================== FIXTURES ====================
 

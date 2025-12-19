@@ -18,19 +18,13 @@ pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from courses.email_services.course_emails import (
-    CourseCompletionEmailService,
-    CourseStartEmailService,
-    DiscountCodeRepository,
-    DiscountCodeService,
-)
+from courses.email_services.course_emails import (CourseCompletionEmailService,
+                                                  CourseStartEmailService,
+                                                  DiscountCodeRepository,
+                                                  DiscountCodeService)
 from customers.models import CustomerDiscountCode
-from tests.factories import (
-    CompanyInfoFactory,
-    CourseFactory,
-    CourseWithParticipantsFactory,
-    CustomerFactory,
-)
+from tests.factories import (CompanyInfoFactory, CourseFactory,
+                             CourseWithParticipantsFactory, CustomerFactory)
 
 # ==================== FIXTURES ====================
 

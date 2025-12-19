@@ -6,13 +6,9 @@ Moderne Darstellung für Periodic Tasks
 
 from django.contrib import admin
 from django.utils.html import format_html
-from django_celery_beat.models import (
-    ClockedSchedule,
-    CrontabSchedule,
-    IntervalSchedule,
-    PeriodicTask,
-    SolarSchedule,
-)
+from django_celery_beat.models import (ClockedSchedule, CrontabSchedule,
+                                       IntervalSchedule, PeriodicTask,
+                                       SolarSchedule)
 from unfold.admin import ModelAdmin
 from unfold.decorators import display
 

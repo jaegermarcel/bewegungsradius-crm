@@ -26,21 +26,11 @@ pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from invoices.models import (
-    CourseIdGenerator,
-    DiscountApplier,
-    Invoice,
-    InvoiceDateManager,
-    InvoiceInitializer,
-    InvoiceNumberGenerator,
-    TaxCalculator,
-)
-from tests.factories import (
-    CourseFactory,
-    CustomerFactory,
-    InvoiceFactory,
-    InvoiceWithDiscountFactory,
-)
+from invoices.models import (CourseIdGenerator, DiscountApplier, Invoice,
+                             InvoiceDateManager, InvoiceInitializer,
+                             InvoiceNumberGenerator, TaxCalculator)
+from tests.factories import (CourseFactory, CustomerFactory, InvoiceFactory,
+                             InvoiceWithDiscountFactory)
 
 # ==================== FIXTURES ====================
 

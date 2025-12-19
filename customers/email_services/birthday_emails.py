@@ -10,11 +10,8 @@ import logging
 from django.db.models.functions import ExtractDay, ExtractMonth
 from django.utils import timezone
 
-from bewegungsradius.core.email import (
-    BaseEmailService,
-    EmailPayload,
-    EmailTemplateConfig,
-)
+from bewegungsradius.core.email import (BaseEmailService, EmailPayload,
+                                        EmailTemplateConfig)
 
 logger = logging.getLogger(__name__)
 

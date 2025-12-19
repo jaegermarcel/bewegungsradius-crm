@@ -1,12 +1,8 @@
 """Email services - Base classes and utilities"""
 
 from .base import BaseEmailService, EmailPayload, EmailTemplateConfig
-from .exceptions import (
-    EmailSendError,
-    EmailServiceError,
-    EmailTemplateRenderError,
-    EmailValidationError,
-)
+from .exceptions import (EmailSendError, EmailServiceError,
+                         EmailTemplateRenderError, EmailValidationError)
 
 __all__ = [
     "BaseEmailService",

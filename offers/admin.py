@@ -2,11 +2,8 @@ from django.contrib import admin
 from unfold.admin import ModelAdmin
 from unfold.decorators import display
 
-from bewegungsradius.core.admin_styles import (
-    DisplayHelpers,
-    SimpleText,
-    StatusIndicator,
-)
+from bewegungsradius.core.admin_styles import (DisplayHelpers, SimpleText,
+                                               StatusIndicator)
 
 from .models import Offer, ZPPCertification
 
