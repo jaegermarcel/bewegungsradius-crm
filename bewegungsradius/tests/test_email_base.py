@@ -12,10 +12,12 @@ import pytest
 
 pytestmark = pytest.mark.django_db
 
-from bewegungsradius.core.email import (BaseEmailService, EmailPayload,
-                                        EmailTemplateConfig)
-from bewegungsradius.core.email.exceptions import (EmailSendError,
-                                                   EmailValidationError)
+from bewegungsradius.core.email import (
+    BaseEmailService,
+    EmailPayload,
+    EmailTemplateConfig,
+)
+from bewegungsradius.core.email.exceptions import EmailSendError, EmailValidationError
 
 # ==================== TEST DOUBLES ====================
 

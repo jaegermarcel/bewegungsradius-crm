@@ -18,9 +18,14 @@ pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from bewegungsradius.core.admin_styles import (BadgeStyle, Colors,
-                                               DisplayHelpers, IconBadge,
-                                               SimpleText, StatusIndicator)
+from bewegungsradius.core.admin_styles import (
+    BadgeStyle,
+    Colors,
+    DisplayHelpers,
+    IconBadge,
+    SimpleText,
+    StatusIndicator,
+)
 
 # ==================== COLORS TESTS ====================
 

@@ -18,8 +18,12 @@ pytestmark = pytest.mark.django_db
 # ==================== IMPORTS ====================
 
 from accounting.models import AccountingEntry
-from tests.factories import (CompanyInfoFactory, CourseFactory,
-                             CustomerFactory, InvoiceFactory)
+from tests.factories import (
+    CompanyInfoFactory,
+    CourseFactory,
+    CustomerFactory,
+    InvoiceFactory,
+)
 
 # ==================== FIXTURES ====================
 

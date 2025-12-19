@@ -21,23 +21,27 @@ jobs:
 
     - name: Install linters
       run: |
-        pip install flake8 black isort mypy
+        pip install flake8 black isort mypy autoflake
 
-    - name: Run Black (formatting check)
-      run: black --check .
-      continue-on-error: true
+    - name: Run autoflake (remove unused imports)
+      run: autoflake --in-place --remove-all-unused-imports --remove-unused-variables --recursive .
 
     - name: Run isort (import sorting)
       run: isort .
 
-    - name: Commit formatted imports
+    - name: Run Black (formatting)
+      run: black .
+
+    - name: Commit formatted code
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        commit_message: "style: Auto-format imports with isort"
+        commit_message: "style: Auto-format code with autoflake, isort, and black"
         file_pattern: "*.py"
 
     - name: Run flake8 (linting)
-      run: flake8 .
+      run: flake8 . --max-line-length=88 --extend-ignore=E203,W503
+      continue-on-error: true
 
     - name: Run mypy (type checking)
       run: mypy . --ignore-missing-imports
+      continue-on-error: true

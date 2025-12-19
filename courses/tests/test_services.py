@@ -21,10 +21,14 @@ pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from courses.services import (CeleryTaskManager, CourseHolidayCalculator,
-                              CourseParticipantCounter,
-                              CourseScheduleCalculator, CourseStatusChecker,
-                              LocationGeocoder)
+from courses.services import (
+    CeleryTaskManager,
+    CourseHolidayCalculator,
+    CourseParticipantCounter,
+    CourseScheduleCalculator,
+    CourseStatusChecker,
+    LocationGeocoder,
+)
 from tests.factories import CourseFactory, CustomerFactory, LocationFactory
 
 # ==================== LOCATION GEOCODER TESTS ====================
@@ -290,6 +294,16 @@ class TestCeleryTaskManager:
         assert manager is not None
         assert manager.EMAIL_LEAD_TIME_DAYS == 2
         assert manager.EMAIL_SEND_HOUR == 8
+
+    @pytest.fixture
+    def course(self, db):
+        """Course Fixture with offer and location"""
+
+        location = LocationFactory()
+        from tests.factories import OfferFactory
+
+        offer = OfferFactory()
+        return CourseFactory(offer=offer, location=location)
 
     def test_get_task_name_start_format(self, manager, course):
         """Test: get_task_name() für Start Task hat aussagekräftiges Format"""

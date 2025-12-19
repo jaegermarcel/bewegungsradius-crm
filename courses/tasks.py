@@ -12,8 +12,10 @@ from django.utils import timezone
 
 from company.models import CompanyInfo
 
-from .email_services.course_emails import (CourseCompletionEmailService,
-                                           CourseStartEmailService)
+from .email_services.course_emails import (
+    CourseCompletionEmailService,
+    CourseStartEmailService,
+)
 from .models import Course
 
 logger = logging.getLogger(__name__)

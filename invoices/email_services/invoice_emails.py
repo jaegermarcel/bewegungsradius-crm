@@ -3,8 +3,11 @@ import logging
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
 
-from bewegungsradius.core.email import (BaseEmailService, EmailPayload,
-                                        EmailTemplateConfig)
+from bewegungsradius.core.email import (
+    BaseEmailService,
+    EmailPayload,
+    EmailTemplateConfig,
+)
 
 logger = logging.getLogger(__name__)
 

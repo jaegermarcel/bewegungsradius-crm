@@ -21,11 +21,19 @@ pytestmark = pytest.mark.django_db
 
 # ==================== IMPORTS ====================
 
-from customers.services import (AddressGeocoder, DiscountCodeCalculator,
-                                DiscountCodeFormatter, DiscountCodeGenerator,
-                                DiscountCodeValidator)
-from tests.factories import (CourseFactory, CustomerDiscountCodeFactory,
-                             CustomerFactory, OfferFactory)
+from customers.services import (
+    AddressGeocoder,
+    DiscountCodeCalculator,
+    DiscountCodeFormatter,
+    DiscountCodeGenerator,
+    DiscountCodeValidator,
+)
+from tests.factories import (
+    CourseFactory,
+    CustomerDiscountCodeFactory,
+    CustomerFactory,
+    OfferFactory,
+)
 
 # ==================== FIXTURES ====================
 

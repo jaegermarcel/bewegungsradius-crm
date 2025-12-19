@@ -3,8 +3,12 @@ from django.db import models
 
 from offers.models import Offer
 
-from .services import (CeleryTaskManager, CourseHolidayCalculator,
-                       CourseScheduleCalculator, LocationGeocoder)
+from .services import (
+    CeleryTaskManager,
+    CourseHolidayCalculator,
+    CourseScheduleCalculator,
+    LocationGeocoder,
+)
 
 
 class Location(models.Model):

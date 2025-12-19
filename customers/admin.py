@@ -16,7 +16,9 @@ from unfold.widgets import UnfoldAdminSelect2Widget
 from bewegungsradius.core.admin_styles import Colors  # Zentrale Farben
 from bewegungsradius.core.admin_styles import SimpleText  # Verschiedene Helper
 from bewegungsradius.core.admin_styles import (  # Pre-made Status (3 Varianten)
-    DisplayHelpers, StatusIndicator)
+    DisplayHelpers,
+    StatusIndicator,
+)
 from courses.models import Course
 
 from .address_validator import CustomerAdminValidationMixin

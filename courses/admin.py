@@ -6,13 +6,15 @@ from unfold.admin import ModelAdmin
 from unfold.decorators import action, display
 from unfold.widgets import UnfoldAdminSelect2Widget
 
-from bewegungsradius.core.admin_styles import \
-    StatusIndicator  # Verschiedene Helper
+from bewegungsradius.core.admin_styles import StatusIndicator  # Verschiedene Helper
 from bewegungsradius.core.admin_styles import DisplayHelpers
 from offers.models import Offer
 
-from .admin_services import (CourseAdminDisplay, CourseWarningHandler,
-                             LocationAdminDisplay)
+from .admin_services import (
+    CourseAdminDisplay,
+    CourseWarningHandler,
+    LocationAdminDisplay,
+)
 from .models import Course, Location
 
 
@@ -269,8 +271,7 @@ class CourseAdmin(ModelAdmin):
     def send_start_email_action(self, request, object_id):
         try:
             from company.models import CompanyInfo
-            from courses.email_services.course_emails import \
-                CourseStartEmailService
+            from courses.email_services.course_emails import CourseStartEmailService
 
             # Laden des Kurses
             course = Course.objects.get(id=object_id)
@@ -301,8 +302,9 @@ class CourseAdmin(ModelAdmin):
     def send_end_email_action(self, request, object_id):
         try:
             from company.models import CompanyInfo
-            from courses.email_services.course_emails import \
-                CourseCompletionEmailService
+            from courses.email_services.course_emails import (
+                CourseCompletionEmailService,
+            )
 
             course = Course.objects.get(id=object_id)
 

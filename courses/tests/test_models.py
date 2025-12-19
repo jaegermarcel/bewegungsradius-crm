@@ -20,8 +20,13 @@ pytestmark = pytest.mark.django_db
 # ==================== IMPORTS ====================
 
 from courses.models import Location
-from tests.factories import (CourseFactory, CourseWithParticipantsFactory,
-                             CustomerFactory, LocationFactory, OfferFactory)
+from tests.factories import (
+    CourseFactory,
+    CourseWithParticipantsFactory,
+    CustomerFactory,
+    LocationFactory,
+    OfferFactory,
+)
 
 # ==================== FIXTURES ====================
 
