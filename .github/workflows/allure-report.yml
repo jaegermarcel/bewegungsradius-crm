@@ -96,7 +96,7 @@ jobs:
         CELERY_BROKER_URL: 'redis://localhost:6379/0'
         CELERY_RESULT_BACKEND: 'redis://localhost:6379/0'
       run: |
-        pytest --cov --cov-report=xml --cov-report=term --cov-fail-under=85 --alluredir=allure-results
+        pytest --cov --cov-report=xml --cov-report=term --cov-fail-under=95 --alluredir=allure-results
       continue-on-error: true
 
     - name: Install Allure CLI
