@@ -4,6 +4,7 @@ accounting/admin.py - Mit gefilterten Summary Cards (PRODUCTION)
 
 from django.contrib import admin
 from django.db.models import Sum
+from django.db.models.functions import ExtractYear
 from django.utils.html import format_html
 from import_export.admin import ImportExportModelAdmin
 from simple_history.admin import SimpleHistoryAdmin
@@ -12,6 +13,70 @@ from unfold.components import BaseComponent, register_component
 from unfold.decorators import display
 
 from .models import AccountingEntry
+
+
+# ==================== CUSTOM FILTER ====================
+
+
+class YearFilter(admin.SimpleListFilter):
+    """Filter für Jahre - zeigt nur Jahre mit Einträgen"""
+
+    title = "Jahr"
+
+    parameter_name = "year"
+
+    def lookups(self, request, model_admin):
+        """Dynamische Liste der Jahre aus der Datenbank"""
+
+        years = (
+            AccountingEntry.objects.annotate(year=ExtractYear("date"))
+            .values_list("year", flat=True)
+            .distinct()
+            .order_by("-year")
+        )
+
+        # "Alle Jahre" als erste Option
+
+        choices = []
+
+        # Jahre aus DB
+
+        for year in years:
+
+            if year:  # None ausschließen
+
+                choices.append((str(year), str(year)))
+
+        return choices
+
+    def queryset(self, request, queryset):
+        """Filter anwenden"""
+
+        if self.value() is None:
+            # Default: Aktuelles Jahr
+
+            from datetime import date
+
+            current_year = date.today().year
+
+            return queryset.filter(date__year=current_year)
+
+            # Spezifisches Jahr gewählt
+
+        return queryset.filter(date__year=self.value())
+
+    def value(self):
+        """Standard-Wert auf aktuelles Jahr setzen"""
+
+        value = super().value()
+
+        if value is None:
+            from datetime import date
+
+            return str(date.today().year)
+
+        return value
+
 
 # ==================== UNFOLD COMPONENT ====================
 
@@ -61,7 +126,7 @@ class AccountingEntryAdmin(SimpleHistoryAdmin, ImportExportModelAdmin, ModelAdmi
         "amount_display",
         "invoice_link",
     ]
-    list_filter = ["entry_type", "date"]
+    list_filter = ["entry_type", YearFilter, "date"]
     search_fields = ["description", "notes"]
     readonly_fields = ["created_at", "invoice_link_display"]
 
