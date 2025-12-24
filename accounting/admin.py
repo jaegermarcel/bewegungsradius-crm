@@ -5,6 +5,8 @@ accounting/admin.py - Mit gefilterten Summary Cards (PRODUCTION)
 from django.contrib import admin
 from django.db.models import Sum
 from django.utils.html import format_html
+from import_export.admin import ImportExportModelAdmin
+from simple_history.admin import SimpleHistoryAdmin
 from unfold.admin import ModelAdmin
 from unfold.components import BaseComponent, register_component
 from unfold.decorators import display
@@ -51,7 +53,7 @@ class AccountingSummaryComponent(BaseComponent):
 
 
 @admin.register(AccountingEntry)
-class AccountingEntryAdmin(ModelAdmin):
+class AccountingEntryAdmin(SimpleHistoryAdmin, ImportExportModelAdmin, ModelAdmin):
     """Ein-/Ausgaben Management"""
 
     list_display = [

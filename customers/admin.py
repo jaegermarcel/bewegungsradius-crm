@@ -8,7 +8,9 @@ from django import forms
 from django.contrib import admin
 from django.utils import timezone
 from django.utils.html import format_html
+from import_export.admin import ImportExportModelAdmin
 from leaflet.admin import LeafletGeoAdminMixin
+from simple_history.admin import SimpleHistoryAdmin
 from unfold.admin import ModelAdmin
 from unfold.decorators import action, display
 from unfold.widgets import UnfoldAdminSelect2Widget
@@ -166,7 +168,13 @@ class CustomerDiscountCodeAdminForm(forms.ModelForm):
 
 
 @admin.register(Customer)
-class CustomerAdmin(CustomerAdminValidationMixin, LeafletGeoAdminMixin, ModelAdmin):
+class CustomerAdmin(
+    SimpleHistoryAdmin,
+    ImportExportModelAdmin,
+    CustomerAdminValidationMixin,
+    LeafletGeoAdminMixin,
+    ModelAdmin,
+):
     list_display = [
         "display_as_two_line_heading",
         "address",
@@ -348,7 +356,7 @@ class CustomerAdmin(CustomerAdminValidationMixin, LeafletGeoAdminMixin, ModelAdm
 
 
 @admin.register(CustomerDiscountCode)
-class CustomerDiscountCodeAdmin(ModelAdmin):
+class CustomerDiscountCodeAdmin(SimpleHistoryAdmin, ImportExportModelAdmin, ModelAdmin):
     form = CustomerDiscountCodeAdminForm
     """Admin für Rabattcodes"""
 

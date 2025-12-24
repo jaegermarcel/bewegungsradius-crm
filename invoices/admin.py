@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.utils.html import format_html
-from import_export.admin import ImportExportModelAdmin
+from import_export.admin import ExportActionModelAdmin
 from simple_history.admin import SimpleHistoryAdmin
 from unfold.admin import ModelAdmin
 from unfold.contrib.filters.admin import RangeDateFilter
@@ -70,8 +70,8 @@ class InvoiceAdminForm(forms.ModelForm):
 
 
 @admin.register(Invoice)
-class InvoiceAdmin(SimpleHistoryAdmin, ImportExportModelAdmin, ModelAdmin):
-    form = InvoiceAdminForm  # ← WICHTIG: Nutze die Custom Form!
+class InvoiceAdmin(SimpleHistoryAdmin, ExportActionModelAdmin, ModelAdmin):
+    form = InvoiceAdminForm
 
     list_display = [
         "display_as_two_line_heading",

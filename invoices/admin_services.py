@@ -1,11 +1,3 @@
-"""
-invoices/admin_services.py - FINAL VERSION
-===========================================
-✅ NUR für: InvoiceActionHandler + InvoicePDFDownloadHandler
-❌ KEINE: InvoiceAdminDisplay (das gehört in admin.py!)
-✅ Nutzt neue InvoicePdfServiceFactory für PDFs
-"""
-
 import logging
 import os
 import tempfile
