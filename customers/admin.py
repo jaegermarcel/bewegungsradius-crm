@@ -201,47 +201,54 @@ class CustomerAdmin(CustomerAdminValidationMixin, LeafletGeoAdminMixin, ModelAdm
     list_per_page = 50
 
     fieldsets = (
-        ("Status", {"fields": (("is_active", "archived_at"),)}),
-        # Tab 1: Persönliche Daten
+        # Stammdaten
         (
-            "Persönliche Daten",
+            "Stammdaten",
             {
-                "classes": ["tab"],
                 "fields": (
+                    ("is_active", "archived_at"),
                     ("first_name", "last_name"),
                     ("email", "mobile"),
                     ("birthday", "contact_channel"),
                 ),
             },
         ),
-        # Tab 2: Adresse
+        # Adresse
         (
             "Adresse",
             {
-                "classes": ["tab"],
                 "fields": (
+                    "address_validation_display",
                     ("street", "house_number"),
                     ("postal_code", "city"),
                     "country",
-                    "address_validation_display",
                     "coordinates",
                 ),
             },
         ),
-        # Tab 3: Zusätzliches
+        # Notizen
         (
-            "Zusätzliches",
+            "Notizen",
             {
-                "classes": ["tab"],
-                "fields": (
-                    "notes",
-                    ("created_at", "updated_at"),
-                ),
+                "fields": ("notes",),
+            },
+        ),
+        # Erweitert - ausgeklappt
+        (
+            "Erweitert",
+            {
+                "classes": ["collapse"],
+                "fields": (("created_at", "updated_at"),),
             },
         ),
     )
 
-    readonly_fields = ["created_at", "updated_at", "archived_at"]
+    readonly_fields = [
+        "created_at",
+        "updated_at",
+        "archived_at",
+        "address_validation_display",
+    ]
 
     # ==================== DISPLAY METHODS ====================
 
