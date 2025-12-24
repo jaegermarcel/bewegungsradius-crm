@@ -202,33 +202,42 @@ class CustomerAdmin(CustomerAdminValidationMixin, LeafletGeoAdminMixin, ModelAdm
 
     fieldsets = (
         ("Status", {"fields": (("is_active", "archived_at"),)}),
+        # Tab 1: Persönliche Daten
         (
             "Persönliche Daten",
-            {"fields": (("first_name", "last_name"), ("email", "mobile"), "birthday")},
+            {
+                "classes": ["tab"],
+                "fields": (
+                    ("first_name", "last_name"),
+                    ("email", "mobile"),
+                    ("birthday", "contact_channel"),
+                ),
+            },
         ),
-        ("Kontakt", {"fields": ("contact_channel",)}),
-        (
-            "Adress-Validierung",
-            {"fields": ("address_validation_display",), "classes": ("wide",)},
-        ),
+        # Tab 2: Adresse
         (
             "Adresse",
             {
+                "classes": ["tab"],
                 "fields": (
                     ("street", "house_number"),
                     ("postal_code", "city"),
                     "country",
-                )
+                    "address_validation_display",
+                    "coordinates",
+                ),
             },
         ),
+        # Tab 3: Zusätzliches
         (
-            "Geografische Position",
-            {"fields": ("coordinates",), "classes": ("collapse",)},
-        ),
-        ("Zusätzliche Informationen", {"fields": ("notes",), "classes": ("collapse",)}),
-        (
-            "Zeitstempel",
-            {"fields": (("created_at", "updated_at"),), "classes": ("collapse",)},
+            "Zusätzliches",
+            {
+                "classes": ["tab"],
+                "fields": (
+                    "notes",
+                    ("created_at", "updated_at"),
+                ),
+            },
         ),
     )
 
@@ -369,25 +378,53 @@ class CustomerDiscountCodeAdmin(ModelAdmin):
     list_per_page = 50
 
     fieldsets = (
-        ("Status", {"fields": ("status",)}),
-        ("Kunde", {"fields": ("customer",)}),
-        ("Kurse", {"fields": ("course",)}),
-        ("Rabattcode", {"fields": (("code", "reason"), "description")}),
-        ("Rabatt-Details", {"fields": (("discount_type", "discount_value"),)}),
-        ("Gültigkeit", {"fields": (("valid_from", "valid_until"),)}),
+        # Hauptinformationen
+        (
+            None,
+            {
+                "fields": (
+                    "status",
+                    "customer",
+                    "course",
+                ),
+            },
+        ),
+        # Rabattcode-Details
+        (
+            "Rabattcode",
+            {
+                "fields": (
+                    ("code", "reason"),
+                    "description",
+                    ("discount_type", "discount_value"),
+                ),
+            },
+        ),
+        # Gültigkeit
+        (
+            "Gültigkeit",
+            {
+                "fields": (("valid_from", "valid_until"),),
+            },
+        ),
+        # Historie
         (
             "Historie",
             {
-                "fields": (
-                    ("email_sent_at", "used_at", "cancelled_at"),
-                    "cancelled_reason",
-                ),
                 "classes": ("collapse",),
+                "fields": (
+                    ("email_sent_at", "used_at"),
+                    ("cancelled_at", "cancelled_reason"),
+                ),
             },
         ),
+        # System-Informationen
         (
             "System",
-            {"fields": (("created_at", "created_by"),), "classes": ("collapse",)},
+            {
+                "classes": ("collapse",),
+                "fields": (("created_at", "created_by"),),
+            },
         ),
     )
 
