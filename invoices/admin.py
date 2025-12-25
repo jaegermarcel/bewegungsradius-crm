@@ -2,13 +2,14 @@ from typing import Union
 
 from django import forms
 from django.contrib import admin
+from django.core.validators import EMPTY_VALUES
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.utils.html import format_html
 from import_export.admin import ExportActionModelAdmin
 from simple_history.admin import SimpleHistoryAdmin
 from unfold.admin import ModelAdmin
-from unfold.contrib.filters.admin import RangeDateFilter
+from unfold.contrib.filters.admin import RangeDateFilter, DropdownFilter
 from unfold.decorators import action, display
 from unfold.widgets import UnfoldAdminSelect2Widget
 
@@ -22,6 +23,43 @@ from customers.models import CustomerDiscountCode
 
 from .admin_services import InvoiceActionHandler, InvoicePDFDownloadHandler
 from .models import Invoice
+
+
+# ========================================
+
+# CUSTOM FILTER
+
+# ========================================
+
+
+class InvoiceStatusFilter(DropdownFilter):
+    """Custom Status-Filter mit Default auf 'Offen'"""
+
+    title = "Status"
+    parameter_name = "status_filter"
+
+    def lookups(self, request, model_admin):
+        """Filter-Optionen"""
+        return [
+            ("open", "Offen (nicht bezahlt/storniert)"),
+            ("paid", "Bezahlt"),
+            ("cancelled", "Storniert"),
+        ]
+
+    def queryset(self, request, queryset):
+        raw_value = request.GET.get(self.parameter_name)
+        if self.value() not in EMPTY_VALUES:
+            if raw_value == "open":
+                return queryset.exclude(status__in=["paid", "cancelled"])
+
+            elif raw_value == "paid":
+                return queryset.filter(status="paid")
+
+            elif raw_value == "cancelled":
+                return queryset.filter(status="cancelled")
+
+        return queryset
+
 
 # ========================================
 # ✅ CUSTOM FORM MIT GEFILTERTEN RABATTCODES
@@ -99,10 +137,8 @@ class InvoiceAdmin(SimpleHistoryAdmin, ExportActionModelAdmin, ModelAdmin):
 
     list_filter_submit = True
     list_filter = [
-        "status",
+        InvoiceStatusFilter,
         "email_sent",
-        "is_prevention_certified",
-        "is_tax_exempt",
         ("issue_date", RangeDateFilter),
         ("due_date", RangeDateFilter),
     ]

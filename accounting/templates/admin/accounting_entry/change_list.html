@@ -6,8 +6,33 @@
     <h1>Ein-/Ausgaben Management</h1>
 {% endblock %}
 
+{% block extrahead %}
+{{ block.super }}
+<script>
+    // Markiere den richtigen Tab als aktiv basierend auf URL
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isDashboard = urlParams.get('view') === 'dashboard';
+
+        // Finde alle Tab-Links
+        const tabs = document.querySelectorAll('a[href*="accounting_accountingentry"]');
+        tabs.forEach(tab => {
+            const href = tab.getAttribute('href');
+            const isTabDashboard = href && href.includes('view=dashboard');
+
+            // Entferne aktive Klassen von allen Tabs
+            tab.classList.remove('border-primary-600', 'dark:border-primary-500', 'text-primary-600', 'dark:text-primary-400');
+
+            // Füge aktive Klasse zum richtigen Tab hinzu
+            if ((isDashboard && isTabDashboard) || (!isDashboard && !isTabDashboard)) {
+                tab.classList.add('border-primary-600', 'dark:border-primary-500', 'text-primary-600', 'dark:text-primary-400');
+            }
+        });
+    });
+</script>
+{% endblock %}
+
 {% block content %}
-    {# Accounting Summary Cards - Full Width Above Everything #}
     <div style="margin-bottom: 2rem; width: 100%; order: -1;">
         <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; width: 100%;">
 

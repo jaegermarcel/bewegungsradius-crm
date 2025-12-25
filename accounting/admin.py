@@ -1,7 +1,3 @@
-"""
-accounting/admin.py - Mit gefilterten Summary Cards (PRODUCTION)
-"""
-
 from django.contrib import admin
 from django.db.models import Sum
 from django.db.models.functions import ExtractYear
@@ -22,7 +18,6 @@ class YearFilter(admin.SimpleListFilter):
     """Filter für Jahre - zeigt nur Jahre mit Einträgen"""
 
     title = "Jahr"
-
     parameter_name = "year"
 
     def lookups(self, request, model_admin):
@@ -36,46 +31,21 @@ class YearFilter(admin.SimpleListFilter):
         )
 
         # "Alle Jahre" als erste Option
-
         choices = []
 
         # Jahre aus DB
-
         for year in years:
-
             if year:  # None ausschließen
-
                 choices.append((str(year), str(year)))
-
         return choices
 
     def queryset(self, request, queryset):
         """Filter anwenden"""
 
         if self.value() is None:
-            # Default: Aktuelles Jahr
-
-            from datetime import date
-
-            current_year = date.today().year
-
-            return queryset.filter(date__year=current_year)
-
+            return queryset
             # Spezifisches Jahr gewählt
-
         return queryset.filter(date__year=self.value())
-
-    def value(self):
-        """Standard-Wert auf aktuelles Jahr setzen"""
-
-        value = super().value()
-
-        if value is None:
-            from datetime import date
-
-            return str(date.today().year)
-
-        return value
 
 
 # ==================== UNFOLD COMPONENT ====================
@@ -156,6 +126,7 @@ class AccountingEntryAdmin(SimpleHistoryAdmin, ImportExportModelAdmin, ModelAdmi
         Die Summen in den Cards werden automatisch aktualisiert,
         wenn Filter angewendet werden!
         """
+
         response = super().changelist_view(request, extra_context)
 
         # Prüfe ob response ein TemplateResponse ist
