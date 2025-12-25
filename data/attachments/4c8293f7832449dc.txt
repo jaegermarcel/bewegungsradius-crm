@@ -1,0 +1,1 @@
+ERROR    bewegungsradius.core.email.base:base.py:119 ❌ Email Versand fehlgeschlagen: Recipient Email ist erforderlich

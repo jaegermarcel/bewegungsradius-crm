@@ -1,0 +1,13 @@
+ERROR    bewegungsradius.core.pdf.pdf_service:pdf_service.py:81 Template rendering failed for nonexistent.html: Template not found
+Traceback (most recent call last):
+  File "/home/runner/work/bewegungsradius-crm/bewegungsradius-crm/bewegungsradius/core/pdf/pdf_service.py", line 77, in render
+    html = render_to_string(template_name, context)
+  File "/opt/hostedtoolcache/Python/3.13.11/x64/lib/python3.13/unittest/mock.py", line 1169, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.11/x64/lib/python3.13/unittest/mock.py", line 1173, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.11/x64/lib/python3.13/unittest/mock.py", line 1228, in _execute_mock_call
+    raise effect
+django.template.exceptions.TemplateDoesNotExist: Template not found

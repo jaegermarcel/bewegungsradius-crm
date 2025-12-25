@@ -1,0 +1,2 @@
+ERROR    bewegungsradius.core.email.base:base.py:119 ❌ Email Versand fehlgeschlagen: Send failed
+ERROR    bewegungsradius.core.email.base:base.py:135 ❌ Fehler bei {'email': 'user2@example.com'}: Email Versand fehlgeschlagen: Send failed

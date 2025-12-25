@@ -1,0 +1,1 @@
+INFO     bewegungsradius.core.email.base:base.py:115 ✓ Email versendet an test@example.com

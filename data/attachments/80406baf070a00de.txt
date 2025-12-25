@@ -1,0 +1,5 @@
+ERROR    bewegungsradius.core.pdf.pdf_service:pdf_service.py:50 HTML to PDF conversion failed: PDF-Generierung ergab leere Bytes
+Traceback (most recent call last):
+  File "/home/runner/work/bewegungsradius-crm/bewegungsradius-crm/bewegungsradius/core/pdf/pdf_service.py", line 45, in convert
+    raise PdfGenerationError("PDF-Generierung ergab leere Bytes")
+bewegungsradius.core.pdf.pdf_service.PdfGenerationError: PDF-Generierung ergab leere Bytes
